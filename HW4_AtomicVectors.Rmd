@@ -1,0 +1,164 @@
+---
+title: "HW4 Atomic Vectors"
+author: "Chika Ikpechukwu"
+date: "07 Feb 2024"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r eval = T, echo = F}
+#install.packages("TeachingDemos")
+library(TeachingDemos) # use this to set the random number seed from a character string
+
+```
+
+1.  Suppose x = 1.1, a = 2.2, and b = 3.3. Assign each expression to the
+    value of the variable z and print the value stored in z.
+
+    a\. $x^{a^b}$
+
+    b\. $(x^a)^b$
+
+    c\. $3x^3+2x^2+1$
+
+    [Solution:]{.underline}
+
+    a\. Computing $z = x^{a^b}$
+
+```{r eval = T, echo = T}
+
+x = 1.1; a = 2.2; b = 3.3 # Assigning values to variables x, a, & b
+v1 = c(x,a,b)
+
+z = v1[1]^v1[2]^v1[3] # Computing z
+print(paste("z = ", z))
+
+```
+
+b.  Computing $z = (x^a)^b$:
+
+```{r eval = T, echo = T}
+z = (v1[1]^v1[2])^v1[3] # Computing z
+print(paste("z = ", z))
+```
+
+c.  Computing $z = 3x^3+2x^2+1$:
+
+```{r eval = T, echo = T}
+z = (3*v1[1]^3)+(2*v1[1]^2)+1 # Computing z
+print(paste("z = ", z))
+
+```
+
+2.  Using the rep and seq functions, create the following vectors:
+
+    a\. (1,2,3,4,5,6,7,8,7,6,5,4,3,2,1)
+
+    b\. (1,2,2,3,3,3,4,4,4,4,5,5,5,5,5)
+
+    c\. (5,4,4,3,3,3,2,2,2,2,1,1,1,1,1)
+
+[Solution]{.underline}:
+
+```{r eval = T, echo=T}
+vec_a = c(1:8, 7:1) # Vector a
+print(vec_a)
+
+dummy = 1:5 
+vec_b = rep(dummy,dummy) # Vector b
+print(vec_b)
+
+vec_c = rep(rev(dummy),dummy) # Vector c
+print(vec_c)
+
+
+```
+
+3.  Create a vector of two random uniform numbers. In a spatial map,
+    these can be interpreted as x and y coordinates that give the
+    location of an individual (such as a marked forest tree in a plot
+    that has been mapped). Using one of R’s inverse trigonometry
+    functions (asin(), acos(), or atan()), convert these numbers into
+    polar coordinates (If you don’t know what polar coordinates are,
+    read about them on the web here, here, or in your calculus
+    textbook).
+
+```{r eval = T, echo = T}
+char2seed("NO GREE FOR ANYBODY #Naija2024") # Set Seed
+
+v5 = runif(2) # Create 2 random uniform numbers x and y coordinates
+#print(v5)
+r = sqrt(v5[1]^2 + v5[2]^2) # Compute the magnitude of the vector
+#print(r)
+theta = atan2(v5[2],v5[1]) # Compute the angle btw x and y 
+#print(theta)
+print(paste("r,theta = ", r,", ",theta))
+
+```
+
+4.  Create a vector queue \<- c("sheep", "fox", "owl", "ant") where
+    queue represents the animals that are lined up to enter Noah’s Ark,
+    with the sheep at the front of the line. Using R expressions, update
+    queue as:
+
+```{=html}
+<!-- -->
+```
+a.  the serpent arrives and gets in line;
+b.  the sheep enters the ark;
+c.  the donkey arrives and talks his way to the front of the line;
+d.  the serpent gets impatient and leaves;
+e.  the owl gets bored and leaves;
+f.  the aphid arrives and the ant invites him to cut in line.
+g.  Finally, determine the position of the aphid in the line.
+
+[Solution]{.underline}:
+
+```{r eval = T, echo = T}
+queue = c("sheep", "fox", "owl", "ant") # Creating the vector
+print(paste("queue = ", queue))
+
+# a. the serpent arrives and gets in line;
+queue = c(queue, "serpent") 
+print(queue)
+
+# b. the sheep enters the ark
+queue[-1] 
+
+# c. the donkey arrives and talks his way to the front of the line
+queue[1] = "donkey" 
+print(queue)
+
+# d. the serpent gets impatient and leaves;
+queue[-5] 
+
+# e. the owl gets bored and leaves
+queue [-3] 
+
+# f. the aphid arrives and the ant invites him to cut in line.
+queue[3] = "aphid" 
+print(queue)
+
+#g. Finally, determine the position of the aphid in the line.
+match("aphid", queue) 
+
+```
+
+5.  Use R to create a vector of all of the integers from 1 to 100 that
+    are not divisible by 2, 3, or 7. You will need one of the arithmetic
+    operators on this cheat sheet.
+
+[Solution]{.underline}:
+
+```{r}
+ d = 1:100 # Create a vector of integers from 1 to 100
+d1 <- d[!(d %% 2 == 0 | d %% 3 == 0 | d %% 7 == 0)] # Filter out integers that are  not divisible by 2, 3, or 7
+
+print(d1)
+```
