@@ -102,14 +102,11 @@ print(paste("r,theta = ", r,", ",theta))
 
 ```
 
-4.  Create a vector queue \<- c("sheep", "fox", "owl", "ant") where
+4.  Create a vector queue = c("sheep", "fox", "owl", "ant") where
     queue represents the animals that are lined up to enter Noah’s Ark,
     with the sheep at the front of the line. Using R expressions, update
     queue as:
 
-```{=html}
-<!-- -->
-```
 a.  the serpent arrives and gets in line;
 b.  the sheep enters the ark;
 c.  the donkey arrives and talks his way to the front of the line;
@@ -121,8 +118,8 @@ g.  Finally, determine the position of the aphid in the line.
 [Solution]{.underline}:
 
 ```{r eval = T, echo = T}
-queue = c("sheep", "fox", "owl", "ant") # Creating the vector
-print(paste("queue = ", queue))
+queue = c("sheep", "fox", "owl", "ant") # Creating the vector 'queue'
+print(queue)
 
 # a. the serpent arrives and gets in line;
 queue = c(queue, "serpent") 

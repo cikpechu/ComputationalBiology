@@ -423,12 +423,11 @@ theta = atan2(v5[2],v5[1]) # Compute the angle btw x and y
 print(paste(&quot;r,theta = &quot;, r,&quot;, &quot;,theta))</code></pre>
 <pre><code>## [1] &quot;r,theta =  0.513719148137284 ,  1.08628528587438&quot;</code></pre>
 <ol start="4" style="list-style-type: decimal">
-<li>Create a vector queue &lt;- c(“sheep”, “fox”, “owl”, “ant”) where
-queue represents the animals that are lined up to enter Noah’s Ark, with
-the sheep at the front of the line. Using R expressions, update queue
+<li>Create a vector queue = c(“sheep”, “fox”, “owl”, “ant”) where queue
+represents the animals that are lined up to enter Noah’s Ark, with the
+sheep at the front of the line. Using R expressions, update queue
 as:</li>
 </ol>
-<!-- -->
 <ol style="list-style-type: lower-alpha">
 <li>the serpent arrives and gets in line;</li>
 <li>the sheep enters the ark;</li>
@@ -439,9 +438,9 @@ as:</li>
 <li>Finally, determine the position of the aphid in the line.</li>
 </ol>
 <p><u>Solution</u>:</p>
-<pre class="r"><code>queue = c(&quot;sheep&quot;, &quot;fox&quot;, &quot;owl&quot;, &quot;ant&quot;) # Creating the vector
-print(paste(&quot;queue = &quot;, queue))</code></pre>
-<pre><code>## [1] &quot;queue =  sheep&quot; &quot;queue =  fox&quot;   &quot;queue =  owl&quot;   &quot;queue =  ant&quot;</code></pre>
+<pre class="r"><code>queue = c(&quot;sheep&quot;, &quot;fox&quot;, &quot;owl&quot;, &quot;ant&quot;) # Creating the vector &#39;queue&#39;
+print(queue)</code></pre>
+<pre><code>## [1] &quot;sheep&quot; &quot;fox&quot;   &quot;owl&quot;   &quot;ant&quot;</code></pre>
 <pre class="r"><code># a. the serpent arrives and gets in line;
 queue = c(queue, &quot;serpent&quot;) 
 print(queue)</code></pre>
