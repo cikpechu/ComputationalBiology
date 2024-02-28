@@ -1,0 +1,208 @@
+---
+title: "Homework 3: REGEX"
+author: "Chika Ikpechukwu."
+date: "02/28/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**QUESTION 1:** 
+
+*Text 1:*
+
+```         
+First String    Second      1.22      3.4 
+Second          More Text   1.555555  2.2220 
+Third           x           3         124
+```
+
+*Text 2:*
+
+```         
+First String,Second,1.22,3.4 
+Second,More Text,1.555555,2.2220 
+Third,x,3,124
+```
+
+[Solution]{.underline}
+
+Converting this text 1 into text 2: 
+
+-   Find: ```\s{2,}```
+
+-   Replace: ```,```
+
+In order to convert 'text 1' to text 2, I used ```\s{2,}``` to capture all spaces that are 2 or more because some of the entries we want to keep contain a single space, then I replaced with ```,```.
+
+**QUESTION 2**: 
+
+*Text 1:*
+
+```         
+Ballif, Bryan, University of Vermont
+Ellison, Aaron, Harvard Forest
+Record, Sydne, Bryn Mawr
+```
+
+*Text 2:*
+
+```         
+Bryan Ballif (University of Vermont)
+Aaron Ellison (Harvard Forest)
+Sydne Record (Bryn Mawr)
+```
+
+[Solution]{.underline}
+
+To convert text 1 into text 2:
+
+-   Find: ```(\w+),\s(\w+),\s(.*)```
+
+-   Replace: ```\2 \1 (\3)```
+
+'()' were used to capture the specific patterns needed in the replace statement and I used numbered back-referencing to call on those characters in the replace statement. 
+
+**QUESTION 3**
+
+*Text 1:*
+
+```         
+0001 Georgia Horseshoe.mp3 0002 Billy In The Lowground.mp3 0003 Winder Slide.mp3 0004 Walking Cane.mp3
+```
+
+*Text 2:*
+
+```         
+0001 Georgia Horseshoe.mp3
+0002 Billy In The Lowground.mp3
+0003 Winder Slide.mp3
+0004 Walking Cane.mp3
+```
+
+[Solution]{.underline}
+
+To convert text 1 to text 2:
+
+-   Find: ```mp3\s```
+
+-   Replace: ```mp3\n```
+
+I captured all instances of 'mp3' followed by a single space and replaced with 'mp3' followed by a line break. 
+
+**QUESTION 4:**
+
+*Text 1:*
+
+```         
+0001 Georgia Horseshoe.mp3
+0002 Billy In The Lowground.mp3
+0003 Winder Slide.mp3
+0004 Walking Cane.mp3
+```
+
+*Text 2:*
+
+```         
+Georgia Horseshoe_0001.mp3  
+Billy In The Lowground_0002.mp3  
+Winder Slide_0003.mp3  
+Walking Cane_0004.mp3
+```
+
+[Solution]{.underline}
+To convert text 1 to text 2:
+
+-   Find: ```(\d{4})(.*)(.mp3)```
+-   Replace: ```\2_\1\3```
+
+I captured the first four digits using the ```\d{4}``` to pick exactly 4 consecutive digits. ```.*``` was used to capture everything else until '.mp3'. Note all of these were captured as described in Ques 2. The replacement statement was done as described in Ques 2. 
+
+**QUESTION 5**
+
+*Text 1:*
+
+```         
+Camponotus,pennsylvanicus,10.2,44 
+Camponotus,herculeanus,10.5,3 
+Myrmica,punctiventris,12.2,4 
+Lasius,neoniger,3.3,55
+```
+
+*Text 2:*
+
+```         
+C_pennsylvanicus,44 
+C_herculeanus,3 
+M_punctiventris,4 
+L_neoniger,55
+```
+
+[Solution]{.underline}
+
+To convert text 1 to text 2:
+
+-   Find: ```(\w)\w+,(\w+).*,(\d+)```
+
+-   Replace: ``` \1_\2,\3```
+
+Similar to the my note on Ques 2 and Ques 4.
+
+**QUESTION 6**
+
+*Text 1:*
+
+```         
+C_pennsylvanicus,44 
+C_herculeanus,3 
+M_punctiventris,4 
+L_neoniger,55
+```
+
+*Text 2:*
+
+```         
+C_penn,44 
+C_herc,3 
+M_punc,4 
+L_neon,55
+```
+
+[Solution]{.underline}
+
+
+To convert text 1 to text 2:
+
+-   Find: ```(\w)_(\w{4}).*,(\d+)```
+-   Replace: ```\1_\2,\3```
+
+Similar to the my note on Ques 2 and Ques 4.
+
+**QUESTION 7**
+
+*Text 1:*
+```         
+Camponotus,pennsylvanicus,10.2,44 
+Camponotus,herculeanus,10.5,3 
+Myrmica,punctiventris,12.2,4 
+Lasius,neoniger,3.3,55
+```
+
+*Text 2:*
+```
+Campen, 44, 10.2
+Camher, 3, 10.5
+Myrpun, 4, 12.2
+Lasneo, 55, 3.3
+```
+
+[Solution]{.underline}
+
+To convert text 1 to text 2: 
+
+-   Find: ```(\w{3}).*,(\w{3})\w+,(.*),(\d+)```
+-   Replace: ```\1\2, \4, \3```
+
+Similar to the my note on Ques 2 and Ques 4.

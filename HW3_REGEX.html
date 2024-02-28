@@ -9,11 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Chika Ikpechukwu" />
+<meta name="author" content="Chika Ikpechukwu." />
 
-<meta name="date" content="2024-02-07" />
+<meta name="date" content="2024-02-28" />
 
-<title>Homework 4: Atomic Vectors</title>
+<title>Homework 3: REGEX</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,134 +350,141 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Homework 4: Atomic Vectors</h1>
-<h4 class="author">Chika Ikpechukwu</h4>
-<h4 class="date">07 Feb 2024</h4>
+<h1 class="title toc-ignore">Homework 3: REGEX</h1>
+<h4 class="author">Chika Ikpechukwu.</h4>
+<h4 class="date">02/28/2024</h4>
 
 </div>
 
 
-<ol style="list-style-type: decimal">
-<li><p>Suppose x = 1.1, a = 2.2, and b = 3.3. Assign each expression to
-the value of the variable z and print the value stored in z.</p>
-<p>a. <span class="math inline">\(x^{a^b}\)</span></p>
-<p>b. <span class="math inline">\((x^a)^b\)</span></p>
-<p>c. <span class="math inline">\(3x^3+2x^2+1\)</span></p>
-<p><u>Solution:</u></p>
-<p>a. Computing <span class="math inline">\(z =
-x^{a^b}\)</span></p></li>
-</ol>
-<pre class="r"><code>x = 1.1; a = 2.2; b = 3.3 # Assigning values to variables x, a, &amp; b
-v1 = c(x,a,b)
-
-z = v1[1]^v1[2]^v1[3] # Computing z
-print(paste(&quot;z = &quot;, z))</code></pre>
-<pre><code>## [1] &quot;z =  3.61714012551594&quot;</code></pre>
-<ol start="2" style="list-style-type: lower-alpha">
-<li>Computing <span class="math inline">\(z = (x^a)^b\)</span>:</li>
-</ol>
-<pre class="r"><code>z = (v1[1]^v1[2])^v1[3] # Computing z
-print(paste(&quot;z = &quot;, z))</code></pre>
-<pre><code>## [1] &quot;z =  1.99761087775261&quot;</code></pre>
-<ol start="3" style="list-style-type: lower-alpha">
-<li>Computing <span class="math inline">\(z = 3x^3+2x^2+1\)</span>:</li>
-</ol>
-<pre class="r"><code>z = (3*v1[1]^3)+(2*v1[1]^2)+1 # Computing z
-print(paste(&quot;z = &quot;, z))</code></pre>
-<pre><code>## [1] &quot;z =  7.413&quot;</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li><p>Using the rep and seq functions, create the following
-vectors:</p>
-<p>a. (1,2,3,4,5,6,7,8,7,6,5,4,3,2,1)</p>
-<p>b. (1,2,2,3,3,3,4,4,4,4,5,5,5,5,5)</p>
-<p>c. (5,4,4,3,3,3,2,2,2,2,1,1,1,1,1)</p></li>
-</ol>
-<p><u>Solution</u>:</p>
-<pre class="r"><code>vec_a = c(1:8, 7:1) # Vector a
-print(vec_a)</code></pre>
-<pre><code>##  [1] 1 2 3 4 5 6 7 8 7 6 5 4 3 2 1</code></pre>
-<pre class="r"><code>dummy = 1:5 
-vec_b = rep(dummy,dummy) # Vector b
-print(vec_b)</code></pre>
-<pre><code>##  [1] 1 2 2 3 3 3 4 4 4 4 5 5 5 5 5</code></pre>
-<pre class="r"><code>vec_c = rep(rev(dummy),dummy) # Vector c
-print(vec_c)</code></pre>
-<pre><code>##  [1] 5 4 4 3 3 3 2 2 2 2 1 1 1 1 1</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>Create a vector of two random uniform numbers. In a spatial map,
-these can be interpreted as x and y coordinates that give the location
-of an individual (such as a marked forest tree in a plot that has been
-mapped). Using one of R’s inverse trigonometry functions (asin(),
-acos(), or atan()), convert these numbers into polar coordinates (If you
-don’t know what polar coordinates are, read about them on the web here,
-here, or in your calculus textbook).</li>
-</ol>
-<pre class="r"><code>char2seed(&quot;NO GREE FOR ANYBODY #Naija2024&quot;) # Set Seed
-
-v5 = runif(2) # Create 2 random uniform numbers x and y coordinates
-#print(v5)
-r = sqrt(v5[1]^2 + v5[2]^2) # Compute the magnitude of the vector
-#print(r)
-theta = atan2(v5[2],v5[1]) # Compute the angle btw x and y 
-#print(theta)
-print(paste(&quot;r,theta = &quot;, r,&quot;, &quot;,theta))</code></pre>
-<pre><code>## [1] &quot;r,theta =  0.513719148137284 ,  1.08628528587438&quot;</code></pre>
-<ol start="4" style="list-style-type: decimal">
-<li>Create a vector queue &lt;- c(“sheep”, “fox”, “owl”, “ant”) where
-queue represents the animals that are lined up to enter Noah’s Ark, with
-the sheep at the front of the line. Using R expressions, update queue
-as:</li>
-</ol>
-<!-- -->
-<ol style="list-style-type: lower-alpha">
-<li>the serpent arrives and gets in line;</li>
-<li>the sheep enters the ark;</li>
-<li>the donkey arrives and talks his way to the front of the line;</li>
-<li>the serpent gets impatient and leaves;</li>
-<li>the owl gets bored and leaves;</li>
-<li>the aphid arrives and the ant invites him to cut in line.</li>
-<li>Finally, determine the position of the aphid in the line.</li>
-</ol>
-<p><u>Solution</u>:</p>
-<pre class="r"><code>queue = c(&quot;sheep&quot;, &quot;fox&quot;, &quot;owl&quot;, &quot;ant&quot;) # Creating the vector
-print(paste(&quot;queue = &quot;, queue))</code></pre>
-<pre><code>## [1] &quot;queue =  sheep&quot; &quot;queue =  fox&quot;   &quot;queue =  owl&quot;   &quot;queue =  ant&quot;</code></pre>
-<pre class="r"><code># a. the serpent arrives and gets in line;
-queue = c(queue, &quot;serpent&quot;) 
-print(queue)</code></pre>
-<pre><code>## [1] &quot;sheep&quot;   &quot;fox&quot;     &quot;owl&quot;     &quot;ant&quot;     &quot;serpent&quot;</code></pre>
-<pre class="r"><code># b. the sheep enters the ark
-queue[-1] </code></pre>
-<pre><code>## [1] &quot;fox&quot;     &quot;owl&quot;     &quot;ant&quot;     &quot;serpent&quot;</code></pre>
-<pre class="r"><code># c. the donkey arrives and talks his way to the front of the line
-queue[1] = &quot;donkey&quot; 
-print(queue)</code></pre>
-<pre><code>## [1] &quot;donkey&quot;  &quot;fox&quot;     &quot;owl&quot;     &quot;ant&quot;     &quot;serpent&quot;</code></pre>
-<pre class="r"><code># d. the serpent gets impatient and leaves;
-queue[-5] </code></pre>
-<pre><code>## [1] &quot;donkey&quot; &quot;fox&quot;    &quot;owl&quot;    &quot;ant&quot;</code></pre>
-<pre class="r"><code># e. the owl gets bored and leaves
-queue [-3] </code></pre>
-<pre><code>## [1] &quot;donkey&quot;  &quot;fox&quot;     &quot;ant&quot;     &quot;serpent&quot;</code></pre>
-<pre class="r"><code># f. the aphid arrives and the ant invites him to cut in line.
-queue[3] = &quot;aphid&quot; 
-print(queue)</code></pre>
-<pre><code>## [1] &quot;donkey&quot;  &quot;fox&quot;     &quot;aphid&quot;   &quot;ant&quot;     &quot;serpent&quot;</code></pre>
-<pre class="r"><code>#g. Finally, determine the position of the aphid in the line.
-match(&quot;aphid&quot;, queue) </code></pre>
-<pre><code>## [1] 3</code></pre>
-<ol start="5" style="list-style-type: decimal">
-<li>Use R to create a vector of all of the integers from 1 to 100 that
-are not divisible by 2, 3, or 7. You will need one of the arithmetic
-operators on this cheat sheet.</li>
-</ol>
-<p><u>Solution</u>:</p>
-<pre class="r"><code> d = 1:100 # Create a vector of integers from 1 to 100
-d1 &lt;- d[!(d %% 2 == 0 | d %% 3 == 0 | d %% 7 == 0)] # Filter out integers that are  not divisible by 2, 3, or 7
-
-print(d1)</code></pre>
-<pre><code>##  [1]  1  5 11 13 17 19 23 25 29 31 37 41 43 47 53 55 59 61 65 67 71 73 79 83 85
-## [26] 89 95 97</code></pre>
+<p><strong>QUESTION 1:</strong></p>
+<p><em>Text 1:</em></p>
+<pre><code>First String    Second      1.22      3.4 
+Second          More Text   1.555555  2.2220 
+Third           x           3         124</code></pre>
+<p><em>Text 2:</em></p>
+<pre><code>First String,Second,1.22,3.4 
+Second,More Text,1.555555,2.2220 
+Third,x,3,124</code></pre>
+<p><u>Solution</u></p>
+<p>Converting this text 1 into text 2:</p>
+<ul>
+<li><p>Find: <code>\s{2,}</code></p></li>
+<li><p>Replace: <code>,</code></p></li>
+</ul>
+<p>In order to convert ‘text 1’ to text 2, I used <code>\s{2,}</code> to
+capture all spaces that are 2 or more because some of the entries we
+want to keep contain a single space, then I replaced with
+<code>,</code>.</p>
+<p><strong>QUESTION 2</strong>:</p>
+<p><em>Text 1:</em></p>
+<pre><code>Ballif, Bryan, University of Vermont
+Ellison, Aaron, Harvard Forest
+Record, Sydne, Bryn Mawr</code></pre>
+<p><em>Text 2:</em></p>
+<pre><code>Bryan Ballif (University of Vermont)
+Aaron Ellison (Harvard Forest)
+Sydne Record (Bryn Mawr)</code></pre>
+<p><u>Solution</u></p>
+<p>To convert text 1 into text 2:</p>
+<ul>
+<li><p>Find: <code>(\w+),\s(\w+),\s(.*)</code></p></li>
+<li><p>Replace: <code>\2 \1 (\3)</code></p></li>
+</ul>
+<p>‘()’ were used to capture the specific patterns needed in the replace
+statement and I used numbered back-referencing to call on those
+characters in the replace statement.</p>
+<p><strong>QUESTION 3</strong></p>
+<p><em>Text 1:</em></p>
+<pre><code>0001 Georgia Horseshoe.mp3 0002 Billy In The Lowground.mp3 0003 Winder Slide.mp3 0004 Walking Cane.mp3</code></pre>
+<p><em>Text 2:</em></p>
+<pre><code>0001 Georgia Horseshoe.mp3
+0002 Billy In The Lowground.mp3
+0003 Winder Slide.mp3
+0004 Walking Cane.mp3</code></pre>
+<p><u>Solution</u></p>
+<p>To convert text 1 to text 2:</p>
+<ul>
+<li><p>Find: <code>mp3\s</code></p></li>
+<li><p>Replace: <code>mp3\n</code></p></li>
+</ul>
+<p>I captured all instances of ‘mp3’ followed by a single space and
+replaced with ‘mp3’ followed by a line break.</p>
+<p><strong>QUESTION 4:</strong></p>
+<p><em>Text 1:</em></p>
+<pre><code>0001 Georgia Horseshoe.mp3
+0002 Billy In The Lowground.mp3
+0003 Winder Slide.mp3
+0004 Walking Cane.mp3</code></pre>
+<p><em>Text 2:</em></p>
+<pre><code>Georgia Horseshoe_0001.mp3  
+Billy In The Lowground_0002.mp3  
+Winder Slide_0003.mp3  
+Walking Cane_0004.mp3</code></pre>
+<p><u>Solution</u> To convert text 1 to text 2:</p>
+<ul>
+<li>Find: <code>(\d{4})(.*)(.mp3)</code></li>
+<li>Replace: <code>\2_\1\3</code></li>
+</ul>
+<p>I captured the first four digits using the <code>\d{4}</code> to pick
+exactly 4 consecutive digits. <code>.*</code> was used to capture
+everything else until ‘.mp3’. Note all of these were captured as
+described in Ques 2. The replacement statement was done as described in
+Ques 2.</p>
+<p><strong>QUESTION 5</strong></p>
+<p><em>Text 1:</em></p>
+<pre><code>Camponotus,pennsylvanicus,10.2,44 
+Camponotus,herculeanus,10.5,3 
+Myrmica,punctiventris,12.2,4 
+Lasius,neoniger,3.3,55</code></pre>
+<p><em>Text 2:</em></p>
+<pre><code>C_pennsylvanicus,44 
+C_herculeanus,3 
+M_punctiventris,4 
+L_neoniger,55</code></pre>
+<p><u>Solution</u></p>
+<p>To convert text 1 to text 2:</p>
+<ul>
+<li><p>Find: <code>(\w)\w+,(\w+).*,(\d+)</code></p></li>
+<li><p>Replace: <code>\1_\2,\3</code></p></li>
+</ul>
+<p>Similar to the my note on Ques 2 and Ques 4.</p>
+<p><strong>QUESTION 6</strong></p>
+<p><em>Text 1:</em></p>
+<pre><code>C_pennsylvanicus,44 
+C_herculeanus,3 
+M_punctiventris,4 
+L_neoniger,55</code></pre>
+<p><em>Text 2:</em></p>
+<pre><code>C_penn,44 
+C_herc,3 
+M_punc,4 
+L_neon,55</code></pre>
+<p><u>Solution</u></p>
+<p>To convert text 1 to text 2:</p>
+<ul>
+<li>Find: <code>(\w)_(\w{4}).*,(\d+)</code></li>
+<li>Replace: <code>\1_\2,\3</code></li>
+</ul>
+<p>Similar to the my note on Ques 2 and Ques 4.</p>
+<p><strong>QUESTION 7</strong></p>
+<p><em>Text 1:</em></p>
+<pre><code>Camponotus,pennsylvanicus,10.2,44 
+Camponotus,herculeanus,10.5,3 
+Myrmica,punctiventris,12.2,4 
+Lasius,neoniger,3.3,55</code></pre>
+<p><em>Text 2:</em></p>
+<pre><code>Campen, 44, 10.2
+Camher, 3, 10.5
+Myrpun, 4, 12.2
+Lasneo, 55, 3.3</code></pre>
+<p><u>Solution</u></p>
+<p>To convert text 1 to text 2:</p>
+<ul>
+<li>Find: <code>(\w{3}).*,(\w{3})\w+,(.*),(\d+)</code></li>
+<li>Replace: <code>\1\2, \4, \3</code></li>
+</ul>
+<p>Similar to the my note on Ques 2 and Ques 4.</p>
 
 
 
