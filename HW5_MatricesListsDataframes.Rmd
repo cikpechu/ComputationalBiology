@@ -1,0 +1,152 @@
+---
+title: "HW5: Matrices, Lists and Dataframes"
+author: "Chika Ikpechukwu"
+date: "2024-02-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+#### **QUESTION 1**
+
+A vector from 1 to a random integer btw 3 and 10 was created, then the vector was shuffled using the sample() function. The shuffled vector was then converted to a 4x4 matrix. 
+```{r eval = T, echo = T}
+n_dims = sample (3:10, 1) # assign a random integer from 3 - 10 to 'n_dims'
+vec = 1:n_dims^2 # create a vector from 1 to n_dims^2
+#print(vec) 
+shuffled_vec = sample(vec) # shuffle the vector 'vec'
+
+mat1 = matrix(shuffled_vec, nrow = sqrt(length(shuffled_vec)), byrow = T) # create a matrix from the shuffled vector
+print(mat1)
+
+```
+
+
+The matrix was then transposed using the 't()' function. The 't()' function returns takes in a matrix and returns the transposed matrix where the rows and columns are switched. See below. 
+
+```{r eval = T, echo = T}
+Tmat1 = t(mat1) # transpose the matrix
+print(Tmat1) 
+```
+
+
+To compute the sum and mean of the first row of the matrix, 'Tmat1[1, ]' was use to call the all elements in row 1 of Tmat1 and passed into the sum() and mean() functions. To capture the elements in the last row, a similar call syntax was used, however, '1' was replaced with 'nrow(Tmat1)' as nrow() function returns the number of rows the matrix (which is also the row number of the last row ). See below:
+
+```{r eval = T, echo = T}
+FirstRowSum = sum(Tmat1[1, ]) # sum the elements in the  first row of the matrix
+LastRowSum = sum(Tmat1[nrow(Tmat1), ]) # sum the elements in the last row of the matrix
+FirstRowMean = mean(Tmat1[1, ]) # average the elements in the first row of the matrix
+LastRowMean = mean(Tmat1[nrow(Tmat1), ]) # average the elements in the last row
+```
+
+```{r eval = T, echo = T}
+print(FirstRowSum)
+print(LastRowSum)
+print(FirstRowMean)
+print(LastRowMean)
+```
+
+Computing the Eigen values of the matrix and determining the type of the values and vectors of the eigen values. 
+
+```{r eval = T, echo = T}
+EMat = eigen(Tmat1) # apply the eigen() function to the transposed matrix
+typeof(EMat$values) # find the type of element 'EMat$values'
+typeof(EMat$vectors) # find the type of element 'EMat$vectors'
+```
+
+
+
+
+#### **QUESTION 2**
+
+A 4x4 matrix with random uniform values (my_matrix), a vector with 100 bolean values (my_logical) and a vector with all 26 lower case letters (my_letters) was created as shown below; 
+
+```{r eval = T, echo=T}
+my_matrix = matrix(runif(16),nrow = 4, ncol = 4) # create 4 x 4 matrix of random uniform values
+print(my_matrix)
+
+vec2 = sample(1:100) # create a vec2 of random integers from 1 to 100; note this is shuffled due to the sample() function
+my_logical = vec2 > 38 # create a boolean vector based on an logical operation
+print(my_logical)
+
+my_letters = letters # create a vector of lower case letters
+print(my_letters)
+```
+
+
+A list (my_list) containing the element [2,2] from 'my_matrix', the second element of 'my_logical' and the second element of 'my_letters' was created as shown below;
+
+```{r eval = T, echo=T}
+my_list = list(my_matrix[2,2],my_logical[2], my_letters[2]) #create a list consisting of the element in row 2, col 2 of 'my_matrix', second element in 'my_logical' and second element in 'my_letters'
+print(my_list)
+```
+
+
+To determine the data type of the individual elements in 'my_list', the sapply() function was used to apply the typeof() function on all the elements in 'my_list'. The data types of the elements in 'my_list' are as shown here;
+
+```{r eval = T, echo=T}
+print(sapply(my_list, typeof)) # return the type of each element in 'my_list'
+
+```
+
+The elements within each of the elements in 'my_list' were pooled into an atomic vector using the c() function and calling the nested elements with '[[]]' as shown here: 
+
+```{r eval = T, echo=T}
+unList = c(my_list[[1]], my_list[[2]], my_list[[3]])
+cat("The combined vector is: [", unList,"]","\n")
+```
+
+
+The combined vector 'unList' data type was determined using the typeof() function;
+```{r eval = T, echo=T}
+cat("The type of the combined vector is: ", typeof(unList), "\n")
+
+```
+
+
+
+
+
+#### **QUESTION 3**
+
+A dataframe 'df' was created with 2 variables 'my_unis':  a vector of 26 random uniform numbers from 0 - 10; and 'my_letters': a vector of the 26 capital letters in random order. See below:
+
+```{r eval = T, echo = T}
+
+my_unis = runif(26, min = 0, max = 10) # create a vector with 26 random uniform numbers from 0 - 10
+my_letters = sample(LETTERS) # create a vector containing all capital letters in a random order
+df = data.frame(my_unis, my_letters) # create a data frame containing 'my_unis' and 'my_letters'
+print(df)
+```
+
+Four randomly selected values in the variable 'my_unis' was then replaced with 'NA'. This was done using the sample() function. See below;
+
+```{r eval = T, echo = T}
+df$my_unis[sample(1:length(my_unis), size = 4, replace = F)] <- NA # replace the values in 4 randomly selected rows on 'my_unis' variable to NA
+print(df)
+```
+
+The rows in 'my_unis' with NA values were determined using the complete.cases() function which returns where there are missing values (ie 'NA'). See below;
+
+```{r eval = T, echo = T}
+complete.cases(df$my_unis) # checks which values in 'my_unis' variable are NAs
+```
+
+The data frame was then sorted by the 'my_letters' variable alphabetically as shown below;
+
+```{r eval = T, echo = T}
+sortedDf <- df[order(df$my_letters),]
+print(sortedDf)
+```
+
+The mean for the variable 'my_unis' was computed as shown below;
+
+```{r eval = T, echo = T}
+mean_my_unis = mean(df$my_unis, na.rm = T) # compute mean of 'my_unis' variable ignoring 'NA' values
+print(mean_my_unis)
+
+```

@@ -9,11 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Chika I." />
+<meta name="author" content="Chika Ikpechukwu" />
 
-<meta name="date" content="2024-01-24" />
+<meta name="date" content="2024-02-28" />
 
-<title>BME-6990 Computational Biology Website</title>
+<title>HW5: Matrices, Lists and Dataframes</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,18 +350,239 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">BME-6990 Computational Biology Website</h1>
-<h4 class="author">Chika I.</h4>
-<h4 class="date">2024-01-24</h4>
+<h1 class="title toc-ignore">HW5: Matrices, Lists and Dataframes</h1>
+<h4 class="author">Chika Ikpechukwu</h4>
+<h4 class="date">2024-02-28</h4>
 
 </div>
 
 
-<p>This is the link for <a href="Homework2.html">homework 2</a></p>
-<p>This is the link for <a href="HW3_REGEX.html">homework 3</a></p>
-<p>This is the link for <a href="HW4_AtomicVectors.html">homework
-4</a></p>
-<p>This is the link for <a href="HW5_MatricesListsDataframes.html">homework 5</a></p>
+<div id="question-1" class="section level4">
+<h4><strong>QUESTION 1</strong></h4>
+<p>A vector from 1 to a random integer btw 3 and 10 was created, then
+the vector was shuffled using the sample() function. The shuffled vector
+was then converted to a 4x4 matrix.</p>
+<pre class="r"><code>n_dims = sample (3:10, 1) # assign a random integer from 3 - 10 to &#39;n_dims&#39;
+vec = 1:n_dims^2 # create a vector from 1 to n_dims^2
+#print(vec) 
+shuffled_vec = sample(vec) # shuffle the vector &#39;vec&#39;
+
+mat1 = matrix(shuffled_vec, nrow = sqrt(length(shuffled_vec)), byrow = T) # create a matrix from the shuffled vector
+print(mat1)</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]   31    8   25   29   30   36
+## [2,]   33    5    3   10   17   35
+## [3,]   16   34    7    4   22   28
+## [4,]   27   24   23    6   26   12
+## [5,]   21   15   19   11   20   14
+## [6,]    9   13    2   32    1   18</code></pre>
+<p>The matrix was then transposed using the ‘t()’ function. The ‘t()’
+function returns takes in a matrix and returns the transposed matrix
+where the rows and columns are switched. See below.</p>
+<pre class="r"><code>Tmat1 = t(mat1) # transpose the matrix
+print(Tmat1) </code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]   31   33   16   27   21    9
+## [2,]    8    5   34   24   15   13
+## [3,]   25    3    7   23   19    2
+## [4,]   29   10    4    6   11   32
+## [5,]   30   17   22   26   20    1
+## [6,]   36   35   28   12   14   18</code></pre>
+<p>To compute the sum and mean of the first row of the matrix, ‘Tmat1[1,
+]’ was use to call the all elements in row 1 of Tmat1 and passed into
+the sum() and mean() functions. To capture the elements in the last row,
+a similar call syntax was used, however, ‘1’ was replaced with
+‘nrow(Tmat1)’ as nrow() function returns the number of rows the matrix
+(which is also the row number of the last row ). See below:</p>
+<pre class="r"><code>FirstRowSum = sum(Tmat1[1, ]) # sum the elements in the  first row of the matrix
+LastRowSum = sum(Tmat1[nrow(Tmat1), ]) # sum the elements in the last row of the matrix
+FirstRowMean = mean(Tmat1[1, ]) # average the elements in the first row of the matrix
+LastRowMean = mean(Tmat1[nrow(Tmat1), ]) # average the elements in the last row</code></pre>
+<pre class="r"><code>print(FirstRowSum)</code></pre>
+<pre><code>## [1] 137</code></pre>
+<pre class="r"><code>print(LastRowSum)</code></pre>
+<pre><code>## [1] 143</code></pre>
+<pre class="r"><code>print(FirstRowMean)</code></pre>
+<pre><code>## [1] 22.83333</code></pre>
+<pre class="r"><code>print(LastRowMean)</code></pre>
+<pre><code>## [1] 23.83333</code></pre>
+<p>Computing the Eigen values of the matrix and determining the type of
+the values and vectors of the eigen values.</p>
+<pre class="r"><code>EMat = eigen(Tmat1) # apply the eigen() function to the transposed matrix
+typeof(EMat$values) # find the type of element &#39;EMat$values&#39;</code></pre>
+<pre><code>## [1] &quot;complex&quot;</code></pre>
+<pre class="r"><code>typeof(EMat$vectors) # find the type of element &#39;EMat$vectors&#39;</code></pre>
+<pre><code>## [1] &quot;complex&quot;</code></pre>
+</div>
+<div id="question-2" class="section level4">
+<h4><strong>QUESTION 2</strong></h4>
+<p>A 4x4 matrix with random uniform values (my_matrix), a vector with
+100 bolean values (my_logical) and a vector with all 26 lower case
+letters (my_letters) was created as shown below;</p>
+<pre class="r"><code>my_matrix = matrix(runif(16),nrow = 4, ncol = 4) # create 4 x 4 matrix of random uniform values
+print(my_matrix)</code></pre>
+<pre><code>##           [,1]      [,2]      [,3]      [,4]
+## [1,] 0.7426310 0.1556424 0.4086924 0.0511928
+## [2,] 0.7730398 0.7208825 0.5834588 0.2725987
+## [3,] 0.7257771 0.3017788 0.1754163 0.3762388
+## [4,] 0.7682025 0.2850336 0.9297124 0.2525771</code></pre>
+<pre class="r"><code>vec2 = sample(1:100) # create a vec2 of random integers from 1 to 100; note this is shuffled due to the sample() function
+my_logical = vec2 &gt; 38 # create a boolean vector based on an logical operation
+print(my_logical)</code></pre>
+<pre><code>##   [1] FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE
+##  [13] FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE  TRUE  TRUE FALSE  TRUE FALSE
+##  [25]  TRUE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE
+##  [37]  TRUE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE
+##  [49]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE  TRUE
+##  [61]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
+##  [73]  TRUE  TRUE FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE  TRUE FALSE
+##  [85]  TRUE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+##  [97] FALSE FALSE  TRUE FALSE</code></pre>
+<pre class="r"><code>my_letters = letters # create a vector of lower case letters
+print(my_letters)</code></pre>
+<pre><code>##  [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;e&quot; &quot;f&quot; &quot;g&quot; &quot;h&quot; &quot;i&quot; &quot;j&quot; &quot;k&quot; &quot;l&quot; &quot;m&quot; &quot;n&quot; &quot;o&quot; &quot;p&quot; &quot;q&quot; &quot;r&quot; &quot;s&quot;
+## [20] &quot;t&quot; &quot;u&quot; &quot;v&quot; &quot;w&quot; &quot;x&quot; &quot;y&quot; &quot;z&quot;</code></pre>
+<p>A list (my_list) containing the element [2,2] from ‘my_matrix’, the
+second element of ‘my_logical’ and the second element of ‘my_letters’
+was created as shown below;</p>
+<pre class="r"><code>my_list = list(my_matrix[2,2],my_logical[2], my_letters[2]) #create a list consisting of the element in row 2, col 2 of &#39;my_matrix&#39;, second element in &#39;my_logical&#39; and second element in &#39;my_letters&#39;
+print(my_list)</code></pre>
+<pre><code>## [[1]]
+## [1] 0.7208825
+## 
+## [[2]]
+## [1] TRUE
+## 
+## [[3]]
+## [1] &quot;b&quot;</code></pre>
+<p>To determine the data type of the individual elements in ‘my_list’,
+the sapply() function was used to apply the typeof() function on all the
+elements in ‘my_list’. The data types of the elements in ‘my_list’ are
+as shown here;</p>
+<pre class="r"><code>print(sapply(my_list, typeof)) # return the type of each element in &#39;my_list&#39;</code></pre>
+<pre><code>## [1] &quot;double&quot;    &quot;logical&quot;   &quot;character&quot;</code></pre>
+<p>The elements within each of the elements in ‘my_list’ were pooled
+into an atomic vector using the c() function and calling the nested
+elements with ‘[[]]’ as shown here:</p>
+<pre class="r"><code>unList = c(my_list[[1]], my_list[[2]], my_list[[3]])
+cat(&quot;The combined vector is: [&quot;, unList,&quot;]&quot;,&quot;\n&quot;)</code></pre>
+<pre><code>## The combined vector is: [ 0.720882483292371 TRUE b ]</code></pre>
+<p>The combined vector ‘unList’ data type was determined using the
+typeof() function;</p>
+<pre class="r"><code>cat(&quot;The type of the combined vector is: &quot;, typeof(unList), &quot;\n&quot;)</code></pre>
+<pre><code>## The type of the combined vector is:  character</code></pre>
+</div>
+<div id="question-3" class="section level4">
+<h4><strong>QUESTION 3</strong></h4>
+<p>A dataframe ‘df’ was created with 2 variables ‘my_unis’: a vector of
+26 random uniform numbers from 0 - 10; and ‘my_letters’: a vector of the
+26 capital letters in random order. See below:</p>
+<pre class="r"><code>my_unis = runif(26, min = 0, max = 10) # create a vector with 26 random uniform numbers from 0 - 10
+my_letters = sample(LETTERS) # create a vector containing all capital letters in a random order
+df = data.frame(my_unis, my_letters) # create a data frame containing &#39;my_unis&#39; and &#39;my_letters&#39;
+print(df)</code></pre>
+<pre><code>##      my_unis my_letters
+## 1  2.1558047          N
+## 2  2.1852846          R
+## 3  0.5699519          K
+## 4  4.6423468          B
+## 5  2.6346022          V
+## 6  4.0094136          M
+## 7  8.0233358          Z
+## 8  5.7974549          T
+## 9  0.8649271          C
+## 10 4.5786657          E
+## 11 4.7824905          D
+## 12 2.1555702          W
+## 13 7.7482124          O
+## 14 7.9171422          F
+## 15 1.2553023          L
+## 16 6.2577328          P
+## 17 5.3538619          I
+## 18 9.3999605          X
+## 19 8.4954362          G
+## 20 9.6422244          H
+## 21 2.0123169          J
+## 22 0.5599284          S
+## 23 5.6731515          A
+## 24 3.0150477          U
+## 25 9.3404680          Y
+## 26 6.2678954          Q</code></pre>
+<p>Four randomly selected values in the variable ‘my_unis’ was then
+replaced with ‘NA’. This was done using the sample() function. See
+below;</p>
+<pre class="r"><code>df$my_unis[sample(1:length(my_unis), size = 4, replace = F)] &lt;- NA # replace the values in 4 randomly selected rows on &#39;my_unis&#39; variable to NA
+print(df)</code></pre>
+<pre><code>##      my_unis my_letters
+## 1  2.1558047          N
+## 2  2.1852846          R
+## 3  0.5699519          K
+## 4         NA          B
+## 5  2.6346022          V
+## 6  4.0094136          M
+## 7  8.0233358          Z
+## 8  5.7974549          T
+## 9  0.8649271          C
+## 10 4.5786657          E
+## 11 4.7824905          D
+## 12 2.1555702          W
+## 13 7.7482124          O
+## 14 7.9171422          F
+## 15 1.2553023          L
+## 16 6.2577328          P
+## 17 5.3538619          I
+## 18        NA          X
+## 19        NA          G
+## 20 9.6422244          H
+## 21 2.0123169          J
+## 22 0.5599284          S
+## 23        NA          A
+## 24 3.0150477          U
+## 25 9.3404680          Y
+## 26 6.2678954          Q</code></pre>
+<p>The rows in ‘my_unis’ with NA values were determined using the
+complete.cases() function which returns where there are missing values
+(ie ‘NA’). See below;</p>
+<pre class="r"><code>complete.cases(df$my_unis) # checks which values in &#39;my_unis&#39; variable are NAs</code></pre>
+<pre><code>##  [1]  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+## [13]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE  TRUE  TRUE  TRUE FALSE  TRUE
+## [25]  TRUE  TRUE</code></pre>
+<p>The data frame was then sorted by the ‘my_letters’ variable
+alphabetically as shown below;</p>
+<pre class="r"><code>sortedDf &lt;- df[order(df$my_letters),]
+print(sortedDf)</code></pre>
+<pre><code>##      my_unis my_letters
+## 23        NA          A
+## 4         NA          B
+## 9  0.8649271          C
+## 11 4.7824905          D
+## 10 4.5786657          E
+## 14 7.9171422          F
+## 19        NA          G
+## 20 9.6422244          H
+## 17 5.3538619          I
+## 21 2.0123169          J
+## 3  0.5699519          K
+## 15 1.2553023          L
+## 6  4.0094136          M
+## 1  2.1558047          N
+## 13 7.7482124          O
+## 16 6.2577328          P
+## 26 6.2678954          Q
+## 2  2.1852846          R
+## 22 0.5599284          S
+## 8  5.7974549          T
+## 24 3.0150477          U
+## 5  2.6346022          V
+## 12 2.1555702          W
+## 18        NA          X
+## 25 9.3404680          Y
+## 7  8.0233358          Z</code></pre>
+<p>The mean for the variable ‘my_unis’ was computed as shown below;</p>
+<pre class="r"><code>mean_my_unis = mean(df$my_unis, na.rm = T) # compute mean of &#39;my_unis&#39; variable ignoring &#39;NA&#39; values
+print(mean_my_unis)</code></pre>
+<pre><code>## [1] 4.414892</code></pre>
+</div>
 
 
 
