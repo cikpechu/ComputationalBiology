@@ -34,7 +34,6 @@ iris1 <- iris %>% filter(Species == "virginica" | Species == "versicolor") %>%
                   filter(Sepal.Length > 6 & Sepal.Width > 2.5)
 
 str(iris1)
-#View(iris1)
 ```
 
 There are 56 observations and 5 variables in ```iris1``` dataset.
