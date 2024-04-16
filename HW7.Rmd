@@ -1,0 +1,193 @@
+---
+title: "HW7"
+author: "Chika I."
+date: "2024-04-15"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Open relevant libraries**
+
+```{r libaries, eval=T, echo=T, message=FALSE, warning=FALSE}
+
+library(tidyverse) # To use ggplot2 and dplyr packages
+library(kableExtra) # To make fancy tables
+library(gridExtra)
+```
+
+**Background:**
+
+My lab studied gene expression from human alveolar type 2 cells grown on different stiffness plates (2kPA, 16kPA and 64kPA) in different media (expansion and differentiation media) for various culture duration (Time). It was hypothesized that stiffness, media and duration (time) will affect gene expression. Assessing the validity of this hypotheses involves several statistical analyses, however for the sake of simplicity only one predictor variable 'Time' and one response variable 'AGER' gene expression will be analysed.
+
+The 'Time' variable is a continuous variable denoting the number of hours post-seeding and the 'AGER' viable is the differential gene expression for the AGER gene and is also continuous. Because both the predictor and response variables are continuous, the linear regression analysis will the the appropriate statistical test to assess the relationship between both variables.
+
+
+### User-designed Functions
+
+In order to repeat the linear regression analysis multiples times with different random data, 3 functions were designed to simplify this process. The user-designed functions were:
+
+-   sim_norm(): a function that creates a simulated (from a normal distribution) AGER gene expression dataset for different culture durations.
+    -   Input Argument: 'list' (a list containing the mean, variance and size of each 'Time' categories)
+    -   Output: 'sim_df' (a dataframe containing a unique ID variable, Time and sim_AGER (simulated from normal distribution))
+-   Reg_Stat(): Performs the linear regression analysis on a dataset
+    -   Input Arguments: 'df' (a dataframe containing the variable the linear regression will be ran on)
+    -   Output: 'a' (an atomic vector containing the coefficient 'b" (*Response* = a + b*Predictor*), the p-value and conclusion (significant or insignificant))
+-   Reg_Plot(): Plot the dataset
+    -   Input Arguments: 'df' (a dataframe containing the variable to be plotted)
+    -   Output: 'plot' (a scatterplot with a trendline showing the correlation between the response and predictor variables))
+
+Below shows the code for the functions:
+
+```{r eval = T, echo=T}
+
+##############################################################################################
+# FUNCTION: sim_rnorm()
+# Description: a function that creates a simulated gene expression dataset for different culture durations.
+# Input Arguments: 'list' (a list containing the mean, variance and size of each 'Time' categories)
+# Output: 'sim_df' (a dataframe containing a unique ID variable, Time and sim_AGER (simulated from normal distribution))
+#___________________________________________________________________________________________
+
+sim_rnorm <- function(list = input){
+
+#Times = c("24h", "+4h", "+24h", "5d")
+
+sim24h = rnorm(n = list[[1]][1], mean = list[[1]][2], sd = sqrt(list[[1]][3]))
+sim48h = rnorm(n = list[[2]][1], mean = list[[2]][2], sd = sqrt(list[[2]][3]))
+sim72h = rnorm(n = list[[3]][1], mean = list[[3]][2], sd = sqrt(list[[3]][3]))
+sim144h = rnorm(n = list[[4]][1], mean = list[[4]][2], sd = sqrt(list[[4]][3]))
+
+sim_AGER <- c(sim24h, sim48h, sim72h, sim144h)
+ID <- 1:length(sim_AGER)
+Time <- c (rep(24, length(sim24h)), rep(48, length(sim48h)), rep(72, length(sim72h)), rep(144, length(sim144h))) # Assigning Time categories to the rnorm() generated data
+
+sim_df <- data.frame(ID, Time, sim_AGER) # Create a dataframe from the simulated Time and AGER data. 
+  
+return(sim_df)
+}
+##############################################################################################
+
+
+##############################################################################################
+# FUNCTION: Reg_Stat()
+# Description: Performs linear regression on a dataset
+# Input Arguments: 'df' (a dataframe containing the variable the linear regression will be ran on)
+# Output: 'sim_df' (a dataframe containing a unique ID variable, Time and sim_AGER (simulated from normal distribution))
+#___________________________________________________________________________________________
+
+Reg_Stat <- function(df = DF){
+  
+   z <- lm(sim_AGER ~ Time, data = df)
+   coeff<-summary(z)$coefficients[2,1] # pulls out the coeffiecient of the relationship btw the response and predictor variables
+   pVal <- summary(z)$coefficients[2,4] # pulls out the p-value of the relationship btw the response and predictor variables
+  
+   a <-c(coeff, pVal, ifelse(pVal < 0.05, "Significant", "Insignificant"))
+   names(a) <- c("Coefficient", "P-Value", "Conclusion")
+   return(a)
+   }
+##############################################################################################
+
+
+##############################################################################################
+# FUNCTION: Reg_Plot()
+# Description: Plot the datset
+# Input Arguments: 'df' (a dataframe containing the variable the ANOVA will be ran on)
+# Output:'plot'
+#___________________________________________________________________________________________
+
+Reg_Plot <- function(df = DF){
+  
+   ### Plot a boxplot of the ANOVA
+   plot <- ggplot(df) +
+   aes(x = Time, y = sim_AGER) +
+   geom_point() +
+   stat_smooth(method=lm,se=0.99) # default se=0.95 
+
+  return(plot)
+ }
+##############################################################################################
+```
+
+
+
+### Running Linear-Regression with Different Datasets
+
+**Getting group means, variances and sizes that will yield significant effects on AGER response**
+
+Instead of guessing the sample sizes, means and variances for each 'Time' group that would yield significant effect in AGER expression, the sample sizes, means and variances of AGER variable for each Time group from my lab's dataset will be used; as a quick linear regression analysis on AGER variable with Time as the predictor yields a significant p-value (p = 0.0002489788). See code chuck:
+
+```{r eval = T, echo=T}
+df <- data.frame(read.csv("RawData.csv")) # read in the original csv dataset into a dataframe
+
+a = lm(df$AGER ~ df$Time, data = df )
+coeff<-summary(a)$coefficients[2,1]
+pVal <- summary(a)$coefficients[2,4]
+print(pVal)
+```
+
+The hypothesized mean, variance and sizes for each Time group are shown below in Table 1.
+
+```{r eval = T, echo=T}
+
+Subset <- df %>% group_by(Time) %>% 
+           summarize(Mean = mean(AGER, na.rm = T), Variance = sd(AGER, na.rm = T)^2, Size = n()) # Get the size, mean and variance of each Time group
+
+kable(Subset, caption = "**Table 1 - Mean, Variance and Size for Each Time Group**", row.names = NA)
+
+```
+
+
+**Creating a random dataset using the hypothesized group means, variances and sizes that will yield significant effects on AGER response**
+
+Using the hypothesized means, variance and sizes for each group (Table 1) a simulated dataset containing simulated 'AGER' values (simulated from a normal distribution) for each Time point was created using the 'sim_rnorm()' function'. The linear regression analysis was done on the simulated dataset and the coefficient and p-value was returned using the 'Reg_Stats()' function. Lastly, the dataset was plotted using the 'Reg_Plot()' function.
+
+*See code chunk:*
+
+```{r eval = T, echo=T}
+## Create global input variables needed to create simulated dataset
+n_24h = 84; mean_24h = 0.8439886; var_24h = 0.0604894;
+n_48h = 86; mean_48h = 2.2456403; var_48h = 3.0218083;
+n_72h = 84; mean_72h = 2.7526489; var_72h = 7.8850666;
+n_144h = 82; mean_144h = 2.4733090; var_144h = 9.2351024;
+
+# Create a list with all input data
+input <- list(sim24h = c(n_24h, mean_24h,var_24h), 
+              sim48h = c(n_48h, mean_48h,var_48h),
+              sim72h = c(n_72h, mean_72h,var_72h),
+              sim144h = c(n_144h, mean_144h,var_144h))
+
+```
+
+
+**Repeating linear regression analysis on different randomly generated datasets with the same means, SD and size**
+
+```{r eval = T, echo= T, fig.keep = 'all', fig.cap="scatter plots for sepal length, sepal width and petal length"}
+df1 <- sim_rnorm(input) # create a randomly generated Time and AGER dataset
+LR1 <- Reg_Stat(df1) # computes the linear regression analysis of AGER(response) and Time (predictor)
+
+df2 <- sim_rnorm(input) # create a randomly generated Time and AGER dataset
+LR2 <- Reg_Stat(df2) # computes the linear regression analysis of AGER(response) and Time (predictor)
+
+df3 <- sim_rnorm(input) # create a randomly generated Time and AGER dataset
+LR3 <- Reg_Stat(df3) # computes the linear regression analysis of AGER(response) and Time (predictor)
+
+df4 <- sim_rnorm(input) # create a randomly generated Time and AGER dataset
+LR4 <- Reg_Stat(df4) # computes the linear regression analysis of AGER(response) and Time (predictor)
+
+Test <- c("Test 1", "Test 2", "Test 3", "Test 4")
+RegStats1 <- bind_rows(LR1, LR2, LR3, LR4)
+s <- cbind(Test,RegStats1)
+
+kable(s, caption = "**Table 2 - Coefficient, p-Value and Conclusion from Linear Regression Analysis on 4 Different Randomly Generated Dataset**")
+
+plotList <-list(Reg_Plot(df1), Reg_Plot(df2), Reg_Plot(df3), Reg_Plot(df4)) # compress all the plots into a list
+grid.arrange(grobs = plotList) # plot all the plots on a grid
+
+```
+
+
+

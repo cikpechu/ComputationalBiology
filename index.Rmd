@@ -16,3 +16,9 @@ This is the link for [homework 3](HW3_REGEX.html)
 This is the link for [homework 4](HW4_AtomicVectors.html)
 
 This is the link for [homework 5](HW5_MatricesListsDataframes.html)
+
+This is the link for [homework 6](HW6_SimulatingAndFittingDataDistributions.html)
+
+This is the link for [homework 7](HW7.html)
+
+This is the link for [homework 8](HW8.html)

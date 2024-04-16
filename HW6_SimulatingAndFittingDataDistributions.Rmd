@@ -1,0 +1,172 @@
+---
+title: "HW6 Simulating and Fitting Data Distribution"
+author: "Chika Ikpechukwu"
+date: "March 27, 2024"
+output: 
+  html_document: 
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Open relevant libraries**
+
+```{r libaries, eval=T, echo=T, message=FALSE, warning=FALSE}
+library(ggplot2) # for graphics
+library(MASS) # for maximum likelihood estimation
+library(skimr)
+library(psych)
+library(tidyverse)
+
+```
+
+### Fit Data to different distributions and get best-fit curve
+
+**Read in dataset**
+
+Dataset source: Bensky, Miles; Bell, Alison (2023). A behavioral syndrome linking boldness and flexibility facilitates invasion success in sticklebacks [Dataset]. Dryad. <https://doi.org/10.5061/dryad.3j9kd51hg>
+
+For the sake of this assignment only one variable "Length" was used. The dataset was imported into R and variable 'Length' was selected as shown here:
+
+```{r eval = T, echo=T}
+z  <- read.csv("BenskyBell_AlaskaDataFinal.csv")
+z <- data.frame(z$Length) # select only one variable "Length" from original dataset
+names(z) <- list("Length")
+z = drop_na(z, Length) # Get rid of NAs in the variable Length
+#View(z)
+```
+
+**Plot histogram of 'Length' data**
+
+``` {r eval = T, echo = T, include = T, collapse = T, message=FALSE, warning=FALSE}
+# Plot histogram of data
+p1 <- ggplot(data=z, aes(x=Length, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) 
+#print(p1)
+
+# Add empirical density curve to visualize the shape of the distribution
+p1 <-  p1 +  geom_density(linetype="dotted",size=0.75)
+print(p1)
+```
+
+**Fit data to the normal distribution**
+
+The data was fit to the normal distribution using the 'fitdistr' function which returns the maximum likelihood estimates for a given data vector based on the specified distribution. The parameter estimates (mean and standard deviation) for the data fitted to the normal distribution were passed into the 'dnorm' function which was superimposed using the 'stat_function'. The normal fit curve was added to the histogram plot.
+
+``` {r eval = T, echo = T, collapse = T, message=FALSE, warning=FALSE}
+# Fit the z$Length to the normal distribution and get the maximum likelihood parameters
+# for the mean and sd. 
+
+normPars <- fitdistr(z$Length,"normal")
+# print(normPars)
+# str(normPars)
+
+# Plot normal probability density
+meanML <- normPars$estimate["mean"]
+sdML <- normPars$estimate["sd"]
+xval <- seq(0,max(z$Length),len=length(z$Length))
+stat <- stat_function(aes(x = xval, y = ..y..), fun = dnorm, colour="red", n = length(z$Length), args = list(mean = meanML, sd = sdML))
+p1 + stat # Add the stat plot to the histogram 'p1'
+```
+
+
+**Fit data to the exponential distribution**
+
+``` {r eval = T, echo = T, collapse = T, message=FALSE, warning=FALSE}
+# Plot exponential probability density
+expoPars <- fitdistr(z$Length,"exponential")
+rateML <- expoPars$estimate["rate"]
+
+stat2 <- stat_function(aes(x = xval, y = ..y..), fun = dexp, colour="blue", n = length(z$Length), args = list(rate=rateML))
+p1 + stat + stat2
+```
+
+
+**Fit data to the uniform distribution**
+
+``` {r eval = T, echo = T, collapse = T, message=FALSE, warning=FALSE}
+# Plot uniform probability density
+stat3 <- stat_function(aes(x = xval, y = ..y..), fun = dunif, colour="darkgreen", n = length(z$Length), args = list(min=min(z$Length), max=max(z$Length)))
+p1 + stat + stat2 + stat3
+```
+
+
+**Fit data to the gamma distribution**
+
+``` {r eval = T, echo = T, collapse = T, message=FALSE, warning=FALSE}
+# Plot gamma probability density
+gammaPars <- fitdistr(z$Length,"gamma")
+shapeML <- gammaPars$estimate["shape"]
+rateML <- gammaPars$estimate["rate"]
+
+stat4 <- stat_function(aes(x = xval, y = ..y..), fun = dgamma, colour="brown", n = length(z$Length), args = list(shape=shapeML, rate=rateML))
+p1 + stat + stat2 + stat3 + stat4
+```
+
+
+**Fit data to the beta distribution**
+
+``` {r eval = T, echo = T, collapse = T, message=FALSE, warning=FALSE}
+
+# Plot beta probability density
+pSpecial <- ggplot(data=z, aes(x=Length/(max(Length + 0.1)), y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) + 
+  xlim(c(0,1)) +
+  geom_density(size=0.75,linetype="dotted")
+#pSpecial
+
+betaPars <- fitdistr(x=z$Length/max(z$Length + 0.1),start=list(shape1=1,shape2=2),"beta")
+shape1ML <- betaPars$estimate["shape1"]
+shape2ML <- betaPars$estimate["shape2"]
+
+statSpecial <- stat_function(aes(x = xval, y = ..y..), fun = dbeta, colour="orchid", n = length(z$Length), args = list(shape1=shape1ML,shape2=shape2ML))
+pSpecial + statSpecial
+
+```
+
+
+### Simulate new data and compare to original data
+
+Based on all the plots above, the normal distrition is the best-fitting distribution. As a result, I will be simulating a new dataset using the 'rnorm' function and passing in the maximum likelihood estimates for the mean and standard deviation computed earlier. 
+
+**Plot histogram of simulated 'Length' data**
+
+``` {r eval = T, echo = T, collapse = T, message=FALSE, warning=FALSE}
+set.seed(123)
+myNorm <- rnorm(n=length(z$Length),mean=meanML,sd=sdML) # create a random normal dataset using the maximum likelihood parameters
+
+# View(myNorm)
+# str(myNorm)
+zNorm <- data.frame(myNorm) # making myNorm a dataframe
+names(zNorm) <- list("Simulated_Length")
+
+# Plot histogram of data
+plotNorm <- ggplot(data=zNorm, aes(x=Simulated_Length, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) 
+#print(plotNorm)
+
+# Add empirical density curve to visualize the shape of the distribution
+pNorm_Density <-  plotNorm +  geom_density(linetype="dotted",size=0.75)
+print(pNorm_Density)
+```
+
+**Plot histogram of original 'Length' data**
+
+``` {r eval = T, echo = T, include = T, collapse = T, message=FALSE, warning=FALSE}
+# Plot histogram of data
+p1 <- ggplot(data=z, aes(x=Length, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) 
+# print(p1)
+
+# Add empirical density curve to visualize the shape of the distribution
+p1 <-  p1 +  geom_density(linetype="dotted",size=0.75)
+print(p1)
+```
+
+
+**CONCLUSION**
+
+Although the normal distribution gave the best-fit model for the original data, it *fairly* simulates the original data because the plot from the simulated data vaguely follows the shape of the original data. 
+
