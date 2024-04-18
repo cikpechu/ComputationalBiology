@@ -1,0 +1,278 @@
+---
+title: "HW10: For Loops And Randomization Tests"
+author: "Chika Ikpechukwu."
+date: "April 17, 2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libaries, eval=T, echo=T, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(gridExtra)
+```
+
+1.  Using a for loop, write a function to calculate the number of zeroes in a numeric vector. Before entering the loop, set up a counter variable counter <- 0. Inside the loop, add 1 to counter each time you have a zero in the vector. Finally, use return(counter) for the output.
+
+```{r eval = T, echo = T}
+#############################################################
+# FUNCTION: zeroes_counter
+# Description: Counts the number of zeroes in a numeric vector
+# Input(s): 'vec' (a vector of numerics)
+# Output(s): 'counter' (the count of zeros in the vector)
+# ------------------------------------------------------
+
+zeroes_counter <- function(vec = NULL){
+# function body
+  counter <- 0 # tracks the number of 0s
+  
+  if (is.null(vec)){ # return a count of 0 if no input vector
+    counter <- 0
+  } else
+  
+  for (i in seq_along(vec)){
+    if(vec[i] != 0) next # only increment 'counter' if 'vec[i]' is a 0
+    counter = counter+1
+  }
+ 
+  return(counter)
+
+} # end of zeroes_counter
+#############################################################
+
+# Utilizing the function ------------------------------------------------------
+
+
+vec1 <- sample(c(1:100, rep(0, sample(1:50, 1)))) # create a shuffled vector of numbers including random number of 0's.
+cat("Here's my vector: ", vec1, "\n",
+    "The number of zeroes in my vector is: ",zeroes_counter(vec = vec1),"\n")
+```
+
+2.  Use subsetting instead of a loop to rewrite the function as a single line of code.
+
+```{r eval = T, echo = T}
+#############################################################
+# FUNCTION: zeroes_counter2
+# Description: Counts the number of zeroes in a numeric vector
+# Input(s): 'vec' (a vector of numerics)
+# Output(s): 'counter' (the count of zeros in the vector)
+# ------------------------------------------------------
+
+zeroes_counter2 <- function(vec = NULL){
+# function body
+  counter <- 0
+  
+  if (is.null(vec)){ # return a count of 0 if no input vector
+    counter <- 0
+  } else
+  
+  counter <- length(vec[vec == 0])
+  return(counter)
+
+} # end of zeroes_counter
+#############################################################
+
+# Utilizing the function ------------------------------------------------------
+
+vec1 <- sample(c(1:100, rep(0, sample(1:50, 1)))) # create a shuffled vector of numbers including random number of 0's.
+cat("Here's my vector: ", vec1, "\n",
+    "The number of zeroes in my vector is: ",zeroes_counter2(vec = vec1),"\n")
+
+```
+
+3.  Write a function that takes as input two integers representing the number of rows and columns in a matrix. The output is a matrix of these dimensions in which each element is the product of the row number x the column number.
+
+```{r eval=T, echo=T}
+#############################################################
+# FUNCTION: make_matrix
+# Description:  create a matrix with specified number of rows and columns in which each element is the product of the row number x the column number.
+# Input(s):  'rows' (no. of rows in the matrix)
+#            'cols' (no. of columns in the matrix0
+# output(s):  a matrix 'm'
+# ------------------------------------------------------
+
+make_matrix <- function(rows = NULL, cols = NULL){
+  
+   m <- NULL # initialize matrix 'm'
+   
+  if (is.null(rows)|is.null(cols)){ # Ensure the function only runs when rows and columns number are provided
+   stop("Function Failure: Pls insert integer values for input parameters 'rows' (number of rows) and 'cols'(number of columns)")
+  } else
+  
+  for (i in seq_len(rows)){
+        mr <- matrix(i * seq_len(cols), ncol = cols) # create a 1 x (cols) matrix with the values being the current row number times the column numbers
+    m <- rbind(m,mr) # adds the matrix 'mr' to the final matrix 'm'
+    }
+    
+return(m)
+
+} # end of make_matrix
+
+#############################################################
+
+# Utilizing the make_matrix() function ------------------------------------------------------
+
+make_matrix(rows = 5, cols = 7)
+```
+
+4.  Now let’s practice calling custom functions within a for loops. Use the code from previous lectures on loops and functions to complete the following steps:
+
+    a.  Simulate a dataset with 3 groups of data, each group drawn from a distribution with a different mean. The final data frame should have 1 column for group and 1 column for the response variable.
+    
+   
+```{r eval=TRUE, echo=TRUE}
+
+#############################################################
+# FUNCTION: sim_df
+# Description: create a dataframe with a simulated dataset of 3 groups of data
+#              each group drawn from a normal distribution with a different mean
+# Input(s):  'means' ( a atomic vector containing means for the 3 groups)
+# output(s):  a dataframe 'df'
+# ------------------------------------------------------
+
+sim_df <- function(means = c(5, 16, 30)){
+   if (is.null(means)){ # Ensure the function only runs when an input is given
+   stop("Function Failure: Insert 'means' (an atomic vector containing means for the 3 groups")
+  } else
+  
+  Group <- NULL # create an empty vector 'Group'
+  Response <- NULL # create an empty vector 'Response'
+  n <- 50
+  set.seed(89)
+  for(i in seq_along(means)){
+    Group <- c(Group, rep(i, n)) # add the group number to the 'Group' vector
+    Response <- c(Response, rnorm(n, mean = means[i])) # add the current 'Response' values to the 'Response' vector
+  }
+  
+df <- data.frame(Group, Response) # join 'Group' and 'Response' vectors into a dataframe
+
+return(df)
+
+} # end of sim_df
+
+#############################################################
+
+# Utilizing the sim_df() function ------------------------------------------------------
+
+a <- sim_df(c(18, 5, 29))
+print(a)
+
+
+
+```
+
+
+b.    Write a custom function that 1) reshuffles the response variable, and 2) calculates the mean of each group in the reshuffled data. Store the means in a vector of length 3.
+
+
+```{r eval = TRUE, echo = TRUE}
+#############################################################
+# FUNCTION: shuffle_means
+# Description:  a custom function that 1) reshuffles the response variable, and 2) calculates the mean of each group in the reshuffled data. Store the means in a vector of length 3
+# Input(s):  dataframe 'df'
+# Output(s):  vector 'v'
+# ------------------------------------------------------
+
+shuffle_means <- function(df = NULL){
+
+   if (is.null(df)){ # Ensure the function only runs when an input is given
+   stop("Function Failure: Insert 'df' a dataframe")
+  } else
+  
+  df[2] <- sample(df$Response) # shuffle 'Response' variable while holding 'Group' variable constant 
+  v <-  df %>% group_by(Group) %>% 
+               summarize(Mean_of_Group = mean(Response)) # computes the mean of the 'Response' variable for each group 
+  
+return(v)
+
+} # end of shuffle_means
+
+#############################################################
+
+# Utilizing shuffle_means() function ------------------------------------------------------
+
+s <- shuffle_means(a)
+print(s)
+
+```
+
+c.    Use a for loop to repeat the function in b 100 times. Store the results in a data frame that has 1 column indicating the replicate number and 1 column for each new group mean, for a total of 4 columns.
+
+```{r eval = TRUE, echo = TRUE}
+
+#Replicate_Number <- NULL
+t <- data.frame(NULL)
+
+
+for (i in seq_len(100)){
+  
+  reShape <- spread(as.data.frame(shuffle_means(a)), key = Group, value = Mean_of_Group) # convert the 'shuffle_means(a)' from long to wide format. 
+  # Note: 'shuffle_means(a) was transform to a dataframe as it was a tibble and spread() only takes in dataframe objects.
+  d <- data.frame(i, reShape)
+  t <- rbind(t, d) # add the dataframe from each iteration to the output dataframe 't'
+}
+
+names(t) <- c("Replicate Number", "Group 1 Means", "Group 2 Means", "Group 3 Means")
+print(t)
+
+```
+
+
+d.    Use qplot() to create a histogram of the means for each reshuffled group. Or, if you want a challenge, use ggplot() to overlay all 3 histograms in the same figure. How do the distributions of reshuffled means compare to the original means?
+
+```{r eval = TRUE, echo = TRUE}
+
+# Reshuffled means plots ------------------------------------------------------
+
+y <- sim_df(c(18, 5, 30)) # create a simulated dataframe
+y[2] <- sample(y$Response) # shuffle the Response variable
+
+
+plot_1 <- ggplot(data = y%>%filter(Group == 1),aes(x = Response)) + # plot group 1
+               geom_histogram(binwidth = 0.5,fill = "royalblue", color = "black") +
+               labs(title = "Shuffled Group 1 ", x = "Groups", y = "Means of the Groups")+
+               theme(plot.title = element_text(hjust=0.5))
+               
+plot_2 <- ggplot(data = y%>%filter(Group == 2),aes(x = Response)) + # plot group 2
+               geom_histogram(binwidth = 0.5,fill = "hotpink", color = "black") +
+               labs(title = "Shuffled Group 2 ", x = "Groups", y = "Means of the Groups") +
+               theme(plot.title = element_text(hjust=0.5))
+
+plot_3 <- ggplot(data = y%>%filter(Group == 3),aes(x = Response)) + # plot group 3
+               geom_histogram(binwidth = 0.5,fill =  "orange", color = "black") +
+               labs(title = "Shuffled Group 3 ", x = "Groups", y = "Means of the Groups") +
+               theme(plot.title = element_text(hjust=0.5))
+
+
+plotList <-list(plot_1, plot_2, plot_3) # compress all the plots into a list
+grid.arrange(grobs = plotList) # plot all 3 plots on a grid
+
+
+# Original means plot (unshuffled) ------------------------------------------------------
+
+f <- sim_df(c(18, 5, 30))
+
+plot_4 <- ggplot(data = f%>%filter(Group == 1),aes(x = Response)) + # plot group 1
+               geom_histogram(binwidth = 0.5,fill = "royalblue", color = "black") +
+               labs(title = "Original Group 1 ", x = "Groups", y = "Means of the Groups")+
+               theme(plot.title = element_text(hjust=0.5))
+               
+plot_5 <- ggplot(data = f%>%filter(Group == 2),aes(x = Response)) + # plot group 2
+               geom_histogram(binwidth = 0.5,fill = "hotpink", color = "black") +
+               labs(title = "Original Group 2 ", x = "Groups", y = "Means of the Groups") +
+               theme(plot.title = element_text(hjust=0.5))
+
+plot_6 <- ggplot(data = f%>%filter(Group == 3),aes(x = Response)) + # plot group 3
+               geom_histogram(binwidth = 0.5,fill =  "orange", color = "black") +
+               labs(title = "Original Group 3 ", x = "Groups", y = "Means of the Groups") +
+               theme(plot.title = element_text(hjust=0.5))
+
+
+plotList2 <-list(plot_4, plot_5, plot_6) # compress all the plots into a list
+grid.arrange(grobs = plotList2) # plot all 3 plots on a grid
+
+```
+
+

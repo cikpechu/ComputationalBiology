@@ -22,3 +22,5 @@ This is the link for [homework 6](HW6_SimulatingAndFittingDataDistributions.html
 This is the link for [homework 7](HW7.html)
 
 This is the link for [homework 8](HW8.html)
+
+This is the link for [homework 10](HW10_ForLoopsAndRandomizationTests.html)
