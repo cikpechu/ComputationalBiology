@@ -1,47 +1,49 @@
 ---
-title: "HW7"
-author: "Chika I."
-date: "2024-04-15"
-output: html_document
-editor_options: 
-  chunk_output_type: console
+title: "HW7: Creating Fake Data Sets To Explore Hypotheses"
+author: "Chika Ikpechukwu."
+date: "April 15, 2024"
+output: 
+  cleanrmd::html_document_clean:
+    theme: kacit
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**Open relevant libraries**
+*Open relevant libraries*
 
 ```{r libaries, eval=T, echo=T, message=FALSE, warning=FALSE}
 
 library(tidyverse) # To use ggplot2 and dplyr packages
 library(kableExtra) # To make fancy tables
 library(gridExtra)
+
 ```
 
-**Background:**
+### Background
 
 My lab studied gene expression from human alveolar type 2 cells grown on different stiffness plates (2kPA, 16kPA and 64kPA) in different media (expansion and differentiation media) for various culture duration (Time). It was hypothesized that stiffness, media and duration (time) will affect gene expression. Assessing the validity of this hypotheses involves several statistical analyses, however for the sake of simplicity only one predictor variable 'Time' and one response variable 'AGER' gene expression will be analysed.
 
-The 'Time' variable is a continuous variable denoting the number of hours post-seeding and the 'AGER' viable is the differential gene expression for the AGER gene and is also continuous. Because both the predictor and response variables are continuous, the linear regression analysis will the the appropriate statistical test to assess the relationship between both variables.
+The 'Time' variable is a continuous variable denoting the number of hours post-seeding and the 'AGER' variable is the differential gene expression for the AGER gene and is also continuous. Because both the predictor and response variables are continuous, the linear regression analysis will the most appropriate statistical test to assess the relationship between both variables.  
 
+For this exercise different normal distribution simulated data sets will be used to visualize how means and sample sizes effect the linear regression output. 
 
 ### User-designed Functions
 
-In order to repeat the linear regression analysis multiples times with different random data, 3 functions were designed to simplify this process. The user-designed functions were:
+In order to repeat the linear regression analysis multiples times with different random data, 3 functions were designed to simplify this process. The user-designed functions are:
 
 -   sim_norm(): a function that creates a simulated (from a normal distribution) AGER gene expression dataset for different culture durations.
-    -   Input Argument: 'list' (a list containing the mean, variance and size of each 'Time' categories)
+    -   Input Argument: 'list' (a list containing the mean, variance and size of each 'Time' group)
     -   Output: 'sim_df' (a dataframe containing a unique ID variable, Time and sim_AGER (simulated from normal distribution))
 -   Reg_Stat(): Performs the linear regression analysis on a dataset
     -   Input Arguments: 'df' (a dataframe containing the variable the linear regression will be ran on)
-    -   Output: 'a' (an atomic vector containing the coefficient 'b" (*Response* = a + b*Predictor*), the p-value and conclusion (significant or insignificant))
+    -   Output: 'a' (an atomic vector containing the coefficient 'b' (*Response* = a + b*Predictor*), the p-value and conclusion (significant (p < 0.05) or insignificant))
 -   Reg_Plot(): Plot the dataset
     -   Input Arguments: 'df' (a dataframe containing the variable to be plotted)
     -   Output: 'plot' (a scatterplot with a trendline showing the correlation between the response and predictor variables))
 
-Below shows the code for the functions:
+*Below shows the code for the functions:*
 
 ```{r eval = T, echo=T}
 
@@ -76,7 +78,7 @@ return(sim_df)
 # FUNCTION: Reg_Stat()
 # Description: Performs linear regression on a dataset
 # Input Arguments: 'df' (a dataframe containing the variable the linear regression will be ran on)
-# Output: 'sim_df' (a dataframe containing a unique ID variable, Time and sim_AGER (simulated from normal distribution))
+# Output: ‘a’ (an atomic vector containing the coefficient 'b' (Response = a + bPredictor), the p-value and conclusion (significant or insignificant))
 #___________________________________________________________________________________________
 
 Reg_Stat <- function(df = DF){
@@ -85,7 +87,7 @@ Reg_Stat <- function(df = DF){
    coeff<-summary(z)$coefficients[2,1] # pulls out the coeffiecient of the relationship btw the response and predictor variables
    pVal <- summary(z)$coefficients[2,4] # pulls out the p-value of the relationship btw the response and predictor variables
   
-   a <-c(coeff, pVal, ifelse(pVal < 0.05, "Significant", "Insignificant"))
+   a <-c(signif(coeff, 4), signif(pVal, 4), ifelse(pVal < 0.05, "Significant", "Non-significant"))
    names(a) <- c("Coefficient", "P-Value", "Conclusion")
    return(a)
    }
@@ -95,26 +97,25 @@ Reg_Stat <- function(df = DF){
 ##############################################################################################
 # FUNCTION: Reg_Plot()
 # Description: Plot the datset
-# Input Arguments: 'df' (a dataframe containing the variable the ANOVA will be ran on)
+# Input Arguments: ‘df’ (a dataframe containing the variable to be plotted)
 # Output:'plot'
 #___________________________________________________________________________________________
 
 Reg_Plot <- function(df = DF){
   
-   ### Plot a boxplot of the ANOVA
+   ### Plot of the data
    plot <- ggplot(df) +
-   aes(x = Time, y = sim_AGER) +
-   geom_point() +
-   stat_smooth(method=lm,se=0.99) # default se=0.95 
-
+           aes(x = Time, y = sim_AGER) +
+           geom_point() +
+           stat_smooth(method=lm,se=0.99) # default se=0.95 
+   
   return(plot)
  }
 ##############################################################################################
 ```
 
 
-
-### Running Linear-Regression with Different Datasets
+### Running Linear Regression on Different Randomly Generated Datasets with the Same Means, Variance and Size
 
 **Getting group means, variances and sizes that will yield significant effects on AGER response**
 
@@ -123,49 +124,46 @@ Instead of guessing the sample sizes, means and variances for each 'Time' group 
 ```{r eval = T, echo=T}
 df <- data.frame(read.csv("RawData.csv")) # read in the original csv dataset into a dataframe
 
-a = lm(df$AGER ~ df$Time, data = df )
+a = lm(df$AGER ~ df$Time, data = df)
 coeff<-summary(a)$coefficients[2,1]
 pVal <- summary(a)$coefficients[2,4]
-print(pVal)
+cat("The coefficient of the linear regression is: ", coeff, "\n",
+    "The p-value is: ", pVal, "\n")
+
 ```
 
 The hypothesized mean, variance and sizes for each Time group are shown below in Table 1.
 
-```{r eval = T, echo=T}
+```{r eval = T, echo=T, fig.align='center'}
 
 Subset <- df %>% group_by(Time) %>% 
-           summarize(Mean = mean(AGER, na.rm = T), Variance = sd(AGER, na.rm = T)^2, Size = n()) # Get the size, mean and variance of each Time group
+                 summarize(Mean = mean(AGER, na.rm = T), Variance = sd(AGER, na.rm = T)^2, Size = n()) # Get the size, mean and variance of each Time group
 
-kable(Subset, caption = "**Table 1 - Mean, Variance and Size for Each Time Group**", row.names = NA)
+kable(Subset, caption = "*Table 1 - Mean, Variance and Size for Each Time Group*", row.names = NA, align = "c")
 
 ```
 
 
 **Creating a random dataset using the hypothesized group means, variances and sizes that will yield significant effects on AGER response**
 
-Using the hypothesized means, variance and sizes for each group (Table 1) a simulated dataset containing simulated 'AGER' values (simulated from a normal distribution) for each Time point was created using the 'sim_rnorm()' function'. The linear regression analysis was done on the simulated dataset and the coefficient and p-value was returned using the 'Reg_Stats()' function. Lastly, the dataset was plotted using the 'Reg_Plot()' function.
+Using the hypothesized means, variance and sizes for each group (Table 1) a simulated dataset containing simulated 'AGER' values (simulated from a normal distribution) for each time point was created using the 'sim_rnorm()' function'. The linear regression analysis was done on the simulated dataset and the coefficient and p-value was returned using the 'Reg_Stats()' function. Lastly, the dataset was plotted using the 'Reg_Plot()' function. The coefficients and p-values for each linear regression model from the 4 test are displayed on table 2. 
 
-*See code chunk:*
+```{r eval = T, echo= T}
+## Create input variables needed to create simulated dataset
 
-```{r eval = T, echo=T}
-## Create global input variables needed to create simulated dataset
 n_24h = 84; mean_24h = 0.8439886; var_24h = 0.0604894;
 n_48h = 86; mean_48h = 2.2456403; var_48h = 3.0218083;
 n_72h = 84; mean_72h = 2.7526489; var_72h = 7.8850666;
 n_144h = 82; mean_144h = 2.4733090; var_144h = 9.2351024;
 
 # Create a list with all input data
+
 input <- list(sim24h = c(n_24h, mean_24h,var_24h), 
               sim48h = c(n_48h, mean_48h,var_48h),
               sim72h = c(n_72h, mean_72h,var_72h),
               sim144h = c(n_144h, mean_144h,var_144h))
 
-```
 
-
-**Repeating linear regression analysis on different randomly generated datasets with the same means, SD and size**
-
-```{r eval = T, echo= T, fig.keep = 'all', fig.cap="scatter plots for sepal length, sepal width and petal length"}
 df1 <- sim_rnorm(input) # create a randomly generated Time and AGER dataset
 LR1 <- Reg_Stat(df1) # computes the linear regression analysis of AGER(response) and Time (predictor)
 
@@ -178,16 +176,165 @@ LR3 <- Reg_Stat(df3) # computes the linear regression analysis of AGER(response)
 df4 <- sim_rnorm(input) # create a randomly generated Time and AGER dataset
 LR4 <- Reg_Stat(df4) # computes the linear regression analysis of AGER(response) and Time (predictor)
 
-Test <- c("Test 1", "Test 2", "Test 3", "Test 4")
+Test <- c("1", "2", "3", "4")
 RegStats1 <- bind_rows(LR1, LR2, LR3, LR4)
 s <- cbind(Test,RegStats1)
 
-kable(s, caption = "**Table 2 - Coefficient, p-Value and Conclusion from Linear Regression Analysis on 4 Different Randomly Generated Dataset**")
+kable(s, caption = "**Table 2 - Coefficient, p-Value and Conclusion from Linear Regression Analysis on 4 Different Randomly Generated Dataset**", align = "c")
 
 plotList <-list(Reg_Plot(df1), Reg_Plot(df2), Reg_Plot(df3), Reg_Plot(df4)) # compress all the plots into a list
-grid.arrange(grobs = plotList) # plot all the plots on a grid
+
+caption <- "Fig 1 - Plot of AGER (simulated from normal distribution with the same means, variance and sample size) and Time."
+
+suppressMessages(grid.arrange(grobs = plotList, bottom = caption)) # plot all the plots on a grid
+
 
 ```
 
 
+### Running Linear-Regression While Adjusting The Group Means And Sample Sizes
+  
+  In order to observe how the means and sample sizes affect linear regression model, the means and sample sizes for the response variable was adjusted to see how small the difference between the groups need to be for there to still be significant pattern (p <0.05).  
+  
+  To isolate the effects of means and sample size differences, the mean or sample size (one at a time) was adjusted while keeping the other constant. 
 
+**Adjusting mean differences while keeping variance and sample sizes constant**
+
+To clearly observe the p_value pattern, due to varying group mean differences the linear regression model was repeated multiple times using the group sample sizes and variances from my dataset, however the means were set to 2.5 and one the group mean varied from 1.5 to 2.5 to study the effect of mean differences. To accomplish this, a for loop was used to compute the p_values for different datasets. Note: the seed was set to 99 to limit variation in each LR model repetition.
+
+*See code chunk below:*
+
+```{r eval = T, echo=T}
+
+Reg_output <- NULL
+trial_mean <- NULL
+
+h <- seq(from = 1.5, to = 2.5, by = 0.05) # create a sequence of means for one group
+
+for(i in seq_along(h)){
+   
+    n_24h = 84; mean_24h = h[i]; var_24h = 0.0604894;
+    n_48h = 86; mean_48h = 2.5; var_48h = 3.0218083;
+    n_72h = 84; mean_72h = 2.5; var_72h = 7.8850666;
+    n_144h = 82; mean_144h = 2.5; var_144h = 9.2351024;
+    
+    # Create a list with all input data
+    input2 <- list(sim24h = c(n_24h, mean_24h,var_24h), 
+                  sim48h = c(n_48h, mean_48h,var_48h),
+                  sim72h = c(n_72h, mean_72h,var_72h),
+                  sim144h = c(n_144h, mean_144h,var_144h))
+    
+    mean_diff <- mean_48h - mean_24h # compute mean difference
+    set.seed(99)
+    dfz <- sim_rnorm(input2) # create a randomly generated Time and AGER dataset
+    
+    RegOutput <- data.frame(t(Reg_Stat(dfz))) # computes the linear regression analysis of AGER(response) and Time
+    tf <- data.frame(t(c(i, mean_diff))) # create a dataframe with the trial no. and the mean diff. for the current trial
+    
+    trial_mean <- rbind(trial_mean, tf)    # update the 'trial_mean' dataframe
+    Reg_output <-rbind(Reg_output, RegOutput) # update the 'Reg_output' dataframe
+    
+}
+
+names(trial_mean) <- c("Trial No", "Mean Difference")
+RegResults <- cbind(trial_mean,Reg_output)
+output <- RegResults %>% select(-Coefficient)
+
+kable(output, caption = "**Table 3 - LR Output with Varying Group Means Difference **", align = "c")
+
+```
+
+As shown in table 4, the smallest mean difference that still yield a significant p-value is 0.85.
+
+
+**Adjusting sample size while keeping mean and variance constant**
+
+To see the effect of sample size differences in the p-value, the hypothesized means and variances from my dataset was used, however all the group sample sizes was changed to 84 (except on that was varied from 0 to 84). A for loop was used to simulate the dataset and run the LR analysis multiple times (22 times) with the varying sample size. To limit data variation, the seed was set to 99. 
+
+*See code chunk:*
+
+```{r eval = T, echo = T}
+
+Reg_output <- NULL
+trial_size <- NULL
+
+h <- seq(from = 0, to = 84, by = 2) # create a sequence of means for one group
+
+for(i in seq_along(h)){
+   
+    n_24h = h[i]; mean_24h = 0.8439886; var_24h = 0.0604894;
+    n_48h = 84; mean_48h = 2.2456403; var_48h = 3.0218083;
+    n_72h = 84; mean_72h = 2.7526489; var_72h = 7.8850666;
+    n_144h = 84; mean_144h = 2.4733090; var_144h = 9.2351024;
+        
+    # Create a list with all input data
+    input2 <- list(sim24h = c(n_24h, mean_24h,var_24h), 
+                  sim48h = c(n_48h, mean_48h,var_48h),
+                  sim72h = c(n_72h, mean_72h,var_72h),
+                  sim144h = c(n_144h, mean_144h,var_144h))
+    
+    size_diff <- n_48h - n_24h # compute mean difference
+    set.seed(99)
+    dfz <- sim_rnorm(input2) # create a randomly generated Time and AGER dataset
+    
+    RegOutput <- data.frame(t(Reg_Stat(dfz))) # computes the linear regression analysis of AGER(response) and Time
+    tf <- data.frame(t(c(i, size_diff))) # create a dataframe with the trial no. and the mean diff. for the current trial
+    
+    trial_size <- rbind(trial_size, tf)    # update the 'trial_mean' dataframe
+    Reg_output <-rbind(Reg_output, RegOutput) # update the 'Reg_output' dataframe
+    
+}
+
+names(trial_size) <- c("Trial No", "Size Difference")
+RegResults <- cbind(trial_size,Reg_output)
+output <- RegResults %>% select(-Coefficient)
+
+kable(output, caption = "**Table 4 - LR Output with Varying Group Size Difference (with seed set to 99)**", align = "c")
+
+```
+
+The smallest sample size difference for my hypothesized group means and variance that still yields significance is 48 as shown in table 4. However, this was based on randomly generated data with the seed set to eliminate variation in the random number generation. To visualize the effect sample size with random variation in the data, the code was re-ran without the seed set. 
+
+*See code chunk:*
+
+```{r eval = T, echo=T}
+
+Reg_output <- NULL
+trial_size <- NULL
+
+h <- seq(from = 0, to = 84, by = 2) # create a sequence of means for one group
+
+for(i in seq_along(h)){
+   
+    n_24h = h[i]; mean_24h = 0.8439886; var_24h = 0.0604894;
+    n_48h = 84; mean_48h = 2.2456403; var_48h = 3.0218083;
+    n_72h = 84; mean_72h = 2.7526489; var_72h = 7.8850666;
+    n_144h = 84; mean_144h = 2.4733090; var_144h = 9.2351024;
+        
+    # Create a list with all input data
+    input2 <- list(sim24h = c(n_24h, mean_24h,var_24h), 
+                  sim48h = c(n_48h, mean_48h,var_48h),
+                  sim72h = c(n_72h, mean_72h,var_72h),
+                  sim144h = c(n_144h, mean_144h,var_144h))
+    
+    size_diff <- n_48h - n_24h # compute mean difference
+    #set.seed(99)
+    dfz <- sim_rnorm(input2) # create a randomly generated Time and AGER dataset
+    
+    RegOutput <- data.frame(t(Reg_Stat(dfz))) # computes the linear regression analysis of AGER(response) and Time
+    tf <- data.frame(t(c(i, size_diff))) # create a dataframe with the trial no. and the mean diff. for the current trial
+    
+    trial_size <- rbind(trial_size, tf)    # update the 'trial_mean' dataframe
+    Reg_output <-rbind(Reg_output, RegOutput) # update the 'Reg_output' dataframe
+    
+}
+
+names(trial_size) <- c("Trial No", "Size Difference")
+RegResults <- cbind(trial_size,Reg_output)
+output <- RegResults %>% select(-Coefficient)
+
+kable(output, caption = "**Table 5 - LR Output with Varying Group Size Difference (without seed set) **", align = "c")
+
+```
+
+As seen from table 5, there is no clear distinctive point where the significance changes due to the effect of random variation in the data between all the trial runs. 
