@@ -1,0 +1,235 @@
+---
+title: "HW9: Organizing Code With Structured Programming"
+author: "Chika Ikpechukwu"
+date: "April 18, 2024"
+output: 
+  cleanrmd::html_document_clean:
+    theme: tacit
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### User-designed Functions
+
+In order to generate random data, and run linear regression and ANOVA on the dataset several functions were designed as shown below:
+
+-   sim_norm(): a function that creates a simulated (from a normal distribution) AGER gene expression dataset for different groups.
+    -   Input Argument: 'list' (a list containing the mean, variance and size of each categories) and 'groups' (an atomic vector of all the predictor groups)
+    -   Output: 'sim_df' (a dataframe containing a unique ID variable, Group and Resp_var (simulated from normal distribution))
+-   Reg_Stat(): Performs the linear regression analysis on a dataset
+    -   Input Arguments: 'df' (a dataframe containing the variable the linear regression will be ran on)
+    -   Output: 'a' (an atomic vector containing the coefficient 'b' (*Response* = a + b*Predictor*), the p-value and conclusion (significant (p < 0.05) or insignificant))
+-   Reg_Plot(): Plot the dataset
+    -   Input Arguments: 'df' (a dataframe containing the variable to be plotted)
+    -   Output: 'plot' (a scatterplot with a trendline showing the correlation between the response and predictor variables))
+-   ANOVA_Stat(): a function that runs the ANOVA analysis on a dataset
+    -   Input: 'df' (a dataframe containing the variable the ANOVA will be ran on)
+    -   Outputs: 'a' (an atomic vector containing the p-value and conclusion (significant (p < 0.05) or insignificant))
+-   ANOVA_Plot(): Plot the dataset
+    -   Input Arguments: 'df' (a dataframe containing the variable to be plotted)
+    -   Output: 'plot' (a boxplot)
+
+
+### Analysis
+
+Two randomly generated datasets were simulated using the 'sim_norm()' function and the the linear regression analysis was ran on the first dataset using the 'Reg_Stat()' and 'Reg_Plot()' functions and ANOVA was ran on the second dataset using the 'ANOVA_Stat()' and 'ANOVA_Plot()' functions. The ooutputs from these analyses are shown in Tables 1 and 2 and Fig 1. 
+
+To automate running these tests several times, a for loop was used to run the ANOVA analysis 10 times and the output shown in Table 3. 
+
+```{r eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
+
+# Relevant libraries ------------------------------------------------------
+
+library(tidyverse) # To use ggplot2 and dplyr packages
+library(kableExtra) # To make fancy tables
+library(patchwork)
+
+# FUNCTIONS ------------------------------------------------------
+
+##############################################################################################
+# FUNCTION: sim_rnorm()
+# Description: a function that creates a simulated gene expression dataset for different groups.
+# Input Arguments: 'list' (a list containing the mean, variance and size of each categories) and 'groups' (an atomic vector of all the predictor groups)
+# Output: 'sim_df' (a dataframe containing a unique ID variable, Group and Resp_var (simulated from normal distribution))
+#___________________________________________________________________________________________
+
+sim_rnorm <- function(groups = c(), list = input){
+
+#Times = c("24h", "+4h", "+24h", "5d")
+
+g1 = rnorm(n = list[[1]][1], mean = list[[1]][2], sd = sqrt(list[[1]][3]))
+g2 = rnorm(n = list[[2]][1], mean = list[[2]][2], sd = sqrt(list[[2]][3]))
+g3 = rnorm(n = list[[3]][1], mean = list[[3]][2], sd = sqrt(list[[3]][3]))
+g4 = rnorm(n = list[[4]][1], mean = list[[4]][2], sd = sqrt(list[[4]][3]))
+
+Resp_var<- c(g1, g2, g3, g4)
+ID <- 1:length(Resp_var)
+Group <- c (rep(groups[1], length(g1)), rep(groups[2], length(g2)), rep(groups[3], length(g3)), rep(groups[4], length(g4))) # Assigning Time categories to the rnorm() generated data
+
+sim_df <- data.frame(ID, Group, Resp_var) # Create a dataframe from the simulated Group and Resp_var data. 
+  
+return(sim_df)
+}
+
+##############################################################################################
+
+
+##############################################################################################
+# FUNCTION: Reg_Stat()
+# Description: Performs linear regression on a dataset
+# Input Arguments: 'df' (a dataframe containing the variable the linear regression will be ran on)
+# Output: p-value, coefficient and conclusion (significant / not-significant)
+#___________________________________________________________________________________________
+
+Reg_Stat <- function(df = DF){
+  
+   z <- lm(Resp_var ~ Group, data = df)
+   coeff<-summary(z)$coefficients[2,1] # pulls out the coefficient of the relationship btw the response and predictor variables
+   pVal <- summary(z)$coefficients[2,4] # pulls out the p-value of the relationship btw the response and predictor variables
+  
+   a <-c(coeff, pVal, ifelse(pVal < 0.05, "Significant", "Non-significant"))
+   names(a) <- c("Coefficient", "P-Value", "Conclusion")
+   return(a)
+}
+
+##############################################################################################
+
+##############################################################################################
+# FUNCTION: Reg_Plot()
+# Description: Plot the datset
+# Input Arguments: 'df' (a dataframe containing the variable the ANOVA will be ran on)
+# Output:'plot'
+#___________________________________________________________________________________________
+
+Reg_Plot <- function(df = DF){
+  
+   ### Plot of the data
+   plot <- ggplot(df) +
+           aes(x = Group, y = Resp_var) +
+           geom_point() +
+           stat_smooth(method=lm,se=0.95) + # default se=0.95 
+           labs(title = "Simulated AGER Response vs Time", x = "Time (hrs)", y = "Simulated AGER Expression")
+   
+  return(plot)
+}
+################################################################################################
+
+##############################################################################################
+# FUNCTION: ANOVA_Stat()
+# Description: Runs the ANOVA on a dataset
+# Input Arguments: 'df' (a dataframe containing the variables the ANOVA will be ran on)
+# Output: p-value and conclusion (significant/not significant)
+#___________________________________________________________________________________________
+
+ANOVA_Stat <- function(df = DF){
+  
+   z <- aov(Resp_var ~ Group, data = df)
+   pVal <- unlist(summary(z))[9] # pulls out the p-value of the relationship btw the response and predictor variables
+  
+   a <-c(pVal, ifelse(pVal < 0.05, "Significant", "Non-significant"))
+   names(a) <- c("P-Value","Conclusion")
+   return(a)
+}
+
+##############################################################################################
+
+
+##############################################################################################
+# FUNCTION: ANOVA_Plot()
+# Description: Plot the datset
+# Input Arguments: 'df' (a dataframe containing the variable the ANOVA will be ran on)
+# Output:'plot'
+#___________________________________________________________________________________________
+
+ANOVA_Plot <- function(df = DF){
+  
+   ### Plot of the data (boxplot)
+   plot <- ggplot(df) +
+           aes(x = Group, y = Resp_var, fill = Group) +
+           geom_boxplot() +
+           labs(title = "Simulated AGER Response vs Stiffness",x = "Stiffness (kPA)", y = "Simulated AGER Expression")
+           
+   
+  return(plot)
+}
+################################################################################################
+
+
+
+
+
+
+# Global Variables ------------------------------------------------------
+
+n_24h = 84; mean_24h = 0.8439886; var_24h = 0.0604894;
+n_48h = 86; mean_48h = 2.2456403; var_48h = 3.0218083;
+n_72h = 84; mean_72h = 2.7526489; var_72h = 7.8850666;
+n_144h = 82; mean_144h = 2.4733090; var_144h = 9.2351024;
+
+# Create a list with all input data
+
+input1 <- list(sim24h = c(n_24h, mean_24h,var_24h), 
+              sim48h = c(n_48h, mean_48h,var_48h),
+              sim72h = c(n_72h, mean_72h,var_72h),
+              sim144h = c(n_144h, mean_144h,var_144h))
+
+
+n_2kpa = 96; mean_2kpa = 1.190448; var_2kpa = 0.650671;
+n_16kpa = 96; mean_16kpa = 1.886097; var_16kpa = 2.287650;
+n_64kpa = 95; mean_64kpa = 2.730308; var_64kpa = 10.417837;
+n_plastic = 49; mean_plastic = 2.892691; var_plastic = 8.975734;
+
+input2 <- list(sim2kpa = c(n_2kpa, mean_2kpa, var_2kpa),
+               sim16kpa = c(n_16kpa, mean_16kpa, var_16kpa), 
+               sim64kpa = c(n_64kpa, mean_64kpa, var_64kpa),
+               simplastic = c(n_plastic, mean_plastic, var_plastic))
+
+
+# Simulating Random Dataset and Running LR and ANOVA ------------------------------------------------------
+
+df1 <- sim_rnorm(groups = c(24, 48, 72, 144), list = input1) # create a randomly generated Time and AGER dataset
+LR <- Reg_Stat(df1) # computes the linear regression analysis of AGER(response) and Time (predictor)
+p1 <- Reg_Plot(df1) # plot the AGER and Time variables in the dataframe
+kable(data.frame(t(LR)), caption = "Table 1 - Sample Linear Regression Analysis Output")
+
+
+df2 <- sim_rnorm(groups = c("2kpa", "16kpa", "64kpa", "Plastic"), list = input2)
+AV <- ANOVA_Stat(df2)
+p2 <- ANOVA_Plot(df2)
+kable(data.frame(t(AV)), caption = "Table 2 - Sample ANOVA Output")
+
+p1/p2 + plot_annotation(tag_levels = "A") # Return both plots 1 and 2 on the same figure
+
+
+# Using a for loop to automate the ANOVA analysis --------------------------------------------------------------------
+
+AV_Stats <- NULL
+
+for (i in seq_len(10)){
+   
+    df2 <- sim_rnorm(groups = c("2kpa", "16kpa", "64kpa", "Plastic"), list = input2)
+    
+    Test <- data.frame(t(i))
+    AnovaOutput <- data.frame(t(ANOVA_Stat(df2)))
+    
+    AV_Stats <- bind_rows(AV_Stats, cbind(Test, AnovaOutput))
+}
+
+names(AV_Stats) <- c("Test No.", "P-Value", "Conclusion")
+
+kable(AV_Stats, caption = "*Table 3 - P-Values and Conclusions from Running ANOVA Ten Times on Randomly Generated Data*", align = "c")
+
+
+```
+
+
+
+
+
+
+
+
+
