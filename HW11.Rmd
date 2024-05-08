@@ -1,0 +1,208 @@
+---
+title: "Homework 11: Batch Processing"
+author: "Chika Ikpechukwu."
+date: "May 08, 2024"
+output: 
+  cleanrmd::html_document_clean:
+    theme: tacit
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Preliminaries
+
+**Open relevant libraries**
+
+```{r eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
+library(kableExtra) # To make fancy tables
+```
+
+**Create a new folder for the original datasets.** 
+(Note the code is commented out as 'add-folder()' requires unique filenames to run and the folder has already been created.)
+
+```{r eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
+
+# source function files 
+source("StrategicProgramming/barracudar/AddFolder.R") # create folders for an r project
+# add_folder("OriginalData")
+```
+
+### Pseudocode:
+
+1.    Get the file name
+2.    Clean data for any empty/missing cases.
+3.    Extract the year from each file name.
+4.    Calculate abundance for each year (total number of individual birds found).
+5.    Calculate species richness for each year (number of unique species found).
+
+### User-Designed Functions
+To execute above 5 functions were designed. The functions were:
+
+1.    *getFilename()*: gets the filename for every file within a directory that contains 'countdata' in the filename 
+2.    *clean_data()*: gets rid of any missing/empty cases in the dataframe using 'scientificName' as the unique ID.
+3.    *extract_year()*: takes in a vector of filenames and returns the years embedded in each filename. 
+4.    *abundance()*: takes in a 'cleaned' dataframe and returns the total number of individual birds observed.
+5.    *species_richness()*: takes in a 'cleaned' dataframe and returns the number of unique species observed. 
+
+See below chunk for the functions code: 
+```{r eval = TRUE, echo = TRUE}
+
+
+#############################################################
+# FUNCTION: getFilename
+# Description:  Get the filename for every file within a directory that contains 'countdata' in the filename
+# Input(s):  'filePath' the directory path to be probed
+# Output(s):  'filename' the filename with 'countdata'
+# ------------------------------------------------------
+
+getFilename <- function(filePath = NULL){
+
+filename <- sub(".*/(.+\\.csv)$", "\\1", filePath)
+
+return(filename)
+
+} # end of getFilename
+#############################################################
+ 
+#############################################################
+# FUNCTION: clean_data
+# Description: data cleaning to get rid of any missing cases
+# Input(s):  'filePath' the file path to the csv file to be cleaned
+# Output(s): 'df' a clean (ie without missing values for the unique identifier) dataframe
+# ------------------------------------------------------
+clean_data <- function(filePath = NULL){
+  d <- read.csv(filePath)
+  df <- d[complete.cases(d$scientificName), ] # returns all columns for all rows with present 'scientificName'
+  
+  return(df)
+  
+} # end of clean_data
+
+#############################################################
+
+#############################################################
+# FUNCTION: extract_year
+# Description:  extract the years from a vector containing countdata filenames for various years
+# Input(s):  'filePath' the filepath
+# Output(s):  'year' the year of the file
+# ------------------------------------------------------
+extract_year <- function(filePath = NULL){
+  
+  year <- gsub(pattern = ".*\\.(\\d{4})-\\d{2}\\..*",
+                replacement = "\\1",
+                x = filePath)
+    return(year)
+  
+} # end of extract_year
+#############################################################
+
+#############################################################
+# FUNCTION: abundance
+# Description:  count the number of individual birds observed
+# Input(s):  'df' a dataframe
+# Output(s):  'count' the number of individual birds observed
+# ------------------------------------------------------
+abundance <- function(df = NULL){
+  
+  count <- length(df$scientificName)
+  
+  return(count)
+  
+} # end of abundance
+#############################################################
+
+#############################################################
+# FUNCTION: species_richness
+# Description: count the number of unique birds observed
+# Input(s):  'df' a dataframe
+# Output(s):  'richness' count the number of unique birds observed 
+# ------------------------------------------------------
+species_richness <- function(df = NULL){
+  
+  richness <- length(unique(df$scientificName))
+  
+  return(richness)
+  
+} # end of species_richness
+#############################################################
+
+```
+
+### Relevant BART Files for Analysis 
+The filenames and full paths for every BART data file containing 'countdata' in the dile name was gotten using a for loop as shown below: 
+
+```{r eval = TRUE, echo = TRUE}
+
+# Using for loops, iterate through each year’s folders to gather the file names of these “countdata” .csv files.
+
+rootDir <- "C:/Users/Chika Ikpechukwu/OneDrive - University of Vermont/Desktop/OriginalData"
+dir_names <- list.dirs(path = rootDir, full.names = TRUE, recursive = FALSE) # returns all the folder names in the specified path.
+
+Filenames <- c() #initiate empty vector for the filenames containing 'countdata'
+Paths <- c() # initiate empty vector to store path to the 'countdata' files
+
+for (i in seq_along(dir_names)){
+  path <- list.files(path = dir_names[i],
+                  pattern = "countdata",
+                  full.names = TRUE) # get full file path of any file with "countdata" in a the filename
+  Paths <- c(Paths, path) # add path to the 'Paths' vector
+  
+  name <- getFilename(filePath = path) # get the filename using 'getFilename' function
+  Filenames <- c(Filenames, name) # add the filename to to 'Filename' vector
+  
+ }
+
+No <- 1:length(Filenames)
+t <- data.frame(No, Filenames)
+
+kable(t, caption = "Table 1: Relevant BART data files to be analyzed", align = "c")  
+  
+```
+
+
+
+### Data Analysis
+
+To efficiently analyse data from all the BART countdata files, a for loop was used to run all 5 functions for all the files as shown below. The summary statistics outputs were all stored in a dataframe 'summary DF'. 
+
+See below for code chunk:
+
+
+```{r eval = TRUE, echo = TRUE}
+
+# Create empty dataframe to store summary statistics
+summaryDF <- data.frame(Filename = character(length(Paths)), 
+                        Year = numeric(length(Paths)), 
+                        Abundance = numeric(length(Paths)), 
+                        Species_Richness = numeric(length(Paths)))
+
+# Initiate empty vectors to store the filename, year, abundance and species richness for each file
+filename <- c()
+year <- c()
+I_abundance <- c()
+richness <- c()
+
+# Loop through each directory and pull out the filename, year, abundance and species richness.
+for (i in seq_along(Paths)){
+  filename <- c(filename, getFilename(Paths[i])) 
+  year <- c(year, extract_year(Paths[i]))
+  data <- clean_data(Paths[i])
+  
+  I_abundance <- c(I_abundance, abundance(df = data))
+  richness <- c(richness, species_richness(df = data))
+  }
+
+# Write the summary statistics into the summary statistics dataframe 'summaryDF'
+summaryDF$Filename <- filename
+summaryDF$Year <- year
+summaryDF$Abundance <- I_abundance
+summaryDF$Species_Richness <- richness
+
+summaryDF %>%
+  kable(caption = "Table 2 - Summary statistics for BART data",
+        col.names= c("File", "Year", "Abundance", "Species Richness"), 
+        align = "lccc")
+
+```
