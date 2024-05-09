@@ -2,31 +2,35 @@
 title: "BME-6990 Computational Biology Website"
 author: "Chika Ikpechukwu"
 date: "Jan. 24, 2024"
-output: html_document
+output: 
+  cleanrmd::html_document_clean:
+    theme: tacit
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This is the link for [homework 2](Homework2.html)
+1.  You can find homework 1 [here](HW1.html)
 
-This is the link for [homework 3](HW3_REGEX.html) 
+2.  You can find homework 2 [here](Homework2.html)
 
-This is the link for [homework 4](HW4_AtomicVectors.html)
+3.  You can find homework 3 [here](HW3_REGEX.html)
 
-This is the link for [homework 5](HW5_MatricesListsDataframes.html)
+4.  You can find homework 4 [here](HW4_AtomicVectors.html)
 
-This is the link for [homework 6](HW6_SimulatingAndFittingDataDistributions.html)
+5.  You can find homework 5 [here](HW5_MatricesListsDataframes.html)
 
-This is the link for [homework 7](HW7.html)
+6.  You can find homework 6 [here](HW6_SimulatingAndFittingDataDistributions.html)
 
-This is the link for [homework 8](HW8.html)
+7.  You can find homework 7 [here](HW7.html)
 
-This is the link for [homework 9](HW9.html)
+8.  You can find homework 8 [here](HW8.html)
 
-This is the link for [homework 10](HW10_ForLoopsAndRandomizationTests.html)
+9.  You can find homework 9 [here](HW9.html)
 
-This is the link for [homework 11](HW11.html)
+10. You can find homework 10 [here](HW10_ForLoopsAndRandomizationTests.html)
 
-This is the link for [homework 12](homewk12.html)
+11. You can find homework 11 [here](HW11.html)
+
+12. You can find homework 12 [here](homewk12.html)

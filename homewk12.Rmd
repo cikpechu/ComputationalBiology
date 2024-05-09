@@ -137,7 +137,7 @@ fig2 <- ggplot(data = dVT, aes(x = State, y = Value, color = Crime)) +
 
 print(fig2)
 
-ggsave("p8.jpeg",fig2, width = 6, height = 4, dpi = 300)
+ggsave("p2.jpeg",fig2, width = 6, height = 4, dpi = 300)
 
 ```
 
