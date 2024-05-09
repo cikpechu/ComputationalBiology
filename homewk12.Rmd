@@ -1,0 +1,172 @@
+---
+title: "HW12: Plotting with ggplot2"
+author: "Chika Ikpechukwu"
+date: "May 09, 2024"
+output: 
+  cleanrmd::html_document_clean:
+    theme: tacit
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Preliminaries
+Open relevant libraries
+
+```{r libaries, eval=T, echo=T, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(patchwork)
+library(ggthemes)
+```
+
+### Background
+
+The 'USArrests' data set in R was used for this assignment. The data set contains arrests data per 100,000 residents for assault, murder, and rape in each of the 50 US states in 1973 along with the percent of residents living in the urban areas. 
+
+```{r eval = TRUE, echo = TRUE}
+df1 <- USArrests 
+head(df1)
+```
+
+#### Data Wrangling 
+The following modifications were made to the dataset for better handling:
+1.    The rownames (which were the states) was made into a new variable 'State'
+2.    The dataset was transformed from wide to long format 
+
+*See below for the code chunk:*
+
+```{r eval = TRUE, echo = TRUE}
+df1$State <- rownames(df1)
+dVT <- df1 %>%
+              gather(key = "Crime",
+              value = "Value",
+              Murder, Assault, Rape)
+
+head(dVT)
+```
+
+### Data Analysis
+
+**Question 1: What is the crime distributions in the most populated states**
+
+To determine this the most urbanly-populated states was first determined. Then the Crime types was plotted on  a piechart by customizing the ggplot statement to include a customized 'coord_polar()' function (see figure 1).
+
+*See below for the code chunk:*
+
+```{r eval = TRUE, echo = TRUE, fig.align='center', message=FALSE, warning=FALSE}
+
+
+p1 <- ggplot(data = dVT%>% filter(State == "California"),
+       mapping = aes(x="", y = Value, fill= Crime)) +
+        geom_bar(stat="identity", width=1) +
+        coord_polar("y", start=0) +
+        theme_void() + 
+        theme(legend.position = "none") +
+        labs(title = "California") +
+        theme(plot.title = element_text(size = 10, hjust = 0.5))
+
+p2 <- ggplot(data = dVT%>% filter(State == "New Jersey"),
+             mapping = aes(x="", y = Value, fill= Crime)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_void() + 
+  theme(legend.position = "none") +
+  labs(title = "New Jersey") +
+  theme(plot.title = element_text(size = 10, hjust = 0.5))
+
+
+p3 <- ggplot(data = dVT%>% filter(State == "New York"),
+             mapping = aes(x="", y = Value, fill= Crime)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_void() + 
+  theme(legend.position = "none") +
+  labs(title = "New York") +
+  theme(plot.title = element_text(size = 10, hjust = 0.5))
+
+p4 <- ggplot(data = dVT%>% filter(State == "Rhode Island"),
+             mapping = aes(x="", y = Value, fill= Crime)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_void() + 
+  #theme(legend.position = "none") +
+  labs(title = "Rhode Island") +
+  theme(plot.title = element_text(size = 10, hjust = 0.5))
+
+
+p5 <- ggplot(data = df1%>%
+                   select(State, UrbanPop) %>%
+                   arrange(desc(UrbanPop)) %>%
+                   head(4),
+       mapping = aes(x=State, y = UrbanPop, fill = State)) +
+              geom_bar(stat="identity", width=0.5) +
+              theme_classic() +
+              theme(legend.position = "none") +
+              labs(y = "Population", x = "") +
+              theme(plot.title = element_text(size = 10, hjust = 0.5),
+                    axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+              
+# Use patchwork to display multiple plots on a figure
+fig1 <- (p5|(p1|p2)/(p3|p4)) + 
+        plot_annotation(title = "Fig 1 - Crime Distribution in the 4 Highest Urban Populated States",
+                        #caption = "Fig 1: Crime distributions in the most urbanly-populated states",
+                        theme = theme(plot.title = element_text(size = 16, hjust = 0.5))
+                        )
+                                     # plot.caption = element_text(hjust = 0, margin = margin(t = 10))))
+
+print(fig1)
+ggsave("fig1.jpeg", fig1, width = 6, height = 4, dpi = 300)
+
+
+```
+
+**Question 2: What is the crime distributions in all states**
+
+To visualize the crime distribution accross the US states all the crimes (murder, assault, rape) values were plotted as a scatterplot and it can be clearly seen from figure 2 that generally, the most arrest type is assaults arrests and the least is murder arrests.
+
+*See below for the code chunk:*
+```{r eval = TRUE, echo = TRUE, fig.align='center', message=FALSE, warning=FALSE}
+
+fig2 <- ggplot(data = dVT, aes(x = State, y = Value, color = Crime)) +
+  geom_point() +
+  theme_clean() +
+  labs(title = "Fig 2 - Crime Trend from all US States", x = "States", y = "") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
+        plot.title = element_text(hjust = 0.5))
+
+print(fig2)
+
+ggsave("p8.jpeg",fig2, width = 6, height = 4, dpi = 300)
+
+```
+
+**Question 3: Which states have the most (least) murder arrests**
+
+To visualize this the murder arrest was plotted using a bar chart with the states ranked from most murder arrests to least murder arrests. According to the data Georgia had the most muder arrest and North Dakota had the least (see fig 3).
+
+*See below for the code chunk:*
+
+```{r eval = TRUE, echo = TRUE, fig.align='center', message=FALSE, warning=FALSE}
+
+fig3 <- ggplot(data = dVT %>% filter(Crime == "Murder"), 
+               mapping = aes(x = factor(State, levels = State[order(Value, decreasing = T)]), y = Value)) +
+  geom_bar(stat="identity", width=0.8) +
+  theme_classic() +
+  labs(title = "Fig 3 - Murder Arrests Ranking ", x = "", y = "Murder arrests per 100,000 residents") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
+        plot.title = element_text(hjust = 0.5)) +
+  geom_segment(aes(x = 1.5, y = 20, xend = 0.8, yend = 15, color = "red"), 
+                 arrow = arrow(type = "closed", length = unit(0.1, "inches"))) +
+  annotate("text", 
+            x = 20, y = 22, 
+            label = "yikes... I don't think I'll be moving to Georgia", 
+            size = 3, 
+            color = "purple", fontface = "italic", hjust = 1, vjust = 1.5) + 
+  theme(legend.position = "none")
+
+print(fig3)
+
+ggsave("fig3.jpeg",fig3, width = 6, height = 4, dpi = 300)
+
+```

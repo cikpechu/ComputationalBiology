@@ -1,7 +1,7 @@
 ---
 title: "BME-6990 Computational Biology Website"
-author: "Chika I."
-date: "2024-01-24"
+author: "Chika Ikpechukwu"
+date: "Jan. 24, 2024"
 output: html_document
 ---
 
@@ -29,4 +29,4 @@ This is the link for [homework 10](HW10_ForLoopsAndRandomizationTests.html)
 
 This is the link for [homework 11](HW11.html)
 
-This is the link for [homework 12]
+This is the link for [homework 12](homewk12.html)

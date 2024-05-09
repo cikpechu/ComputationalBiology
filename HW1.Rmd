@@ -1,0 +1,8 @@
+---
+title: "HW1"
+author: "Chika I."
+date: "2024-05-09"
+output: html_document
+---
+
+Here's the link to my github Computational Biology repository: <https://cikpechu.github.io/ComputationalBiology/>
